@@ -1,0 +1,847 @@
+[
+  {
+    "amounts": [
+      {
+        "amount": 10,
+        "member_id": 1
+      }
+    ],
+    "category": "Food",
+    "currency": "CAD",
+    "date": 1546318800,
+    "description": "Shawarma",
+    "id": 1,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      },
+      {
+        "member_id": 3,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 45.5,
+        "member_id": 2
+      }
+    ],
+    "category": "Transportation",
+    "currency": "CAD",
+    "date": 1546405200,
+    "description": "Gas",
+    "id": 2,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 20,
+        "member_id": 1
+      }
+    ],
+    "category": "Groceries",
+    "currency": "CAD",
+    "date": 1546491600,
+    "description": "Loblaws",
+    "id": 3,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 500,
+        "member_id": 2
+      }
+    ],
+    "category": "Housing",
+    "currency": "CAD",
+    "date": 1546578000,
+    "description": "Rent",
+    "id": 4,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 30,
+        "member_id": 1
+      }
+    ],
+    "category": "Utilities",
+    "currency": "CAD",
+    "date": 1546664400,
+    "description": "Wifi",
+    "id": 5,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 5,
+        "member_id": 2
+      }
+    ],
+    "category": "Food",
+    "currency": "CAD",
+    "date": 1546750800,
+    "description": "Chatime",
+    "id": 6,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 10,
+        "member_id": 1
+      }
+    ],
+    "category": "Food",
+    "currency": "CAD",
+    "date": 1546318800,
+    "description": "Shawarma",
+    "id": 1,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      },
+      {
+        "member_id": 3,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 45.5,
+        "member_id": 2
+      }
+    ],
+    "category": "Transportation",
+    "currency": "CAD",
+    "date": 1546405200,
+    "description": "Gas",
+    "id": 2,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 20,
+        "member_id": 1
+      }
+    ],
+    "category": "Groceries",
+    "currency": "CAD",
+    "date": 1546491600,
+    "description": "Loblaws",
+    "id": 3,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 500,
+        "member_id": 2
+      }
+    ],
+    "category": "Housing",
+    "currency": "CAD",
+    "date": 1546578000,
+    "description": "Rent",
+    "id": 4,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 30,
+        "member_id": 1
+      }
+    ],
+    "category": "Utilities",
+    "currency": "CAD",
+    "date": 1546664400,
+    "description": "Wifi",
+    "id": 5,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 5,
+        "member_id": 2
+      }
+    ],
+    "category": "Food",
+    "currency": "CAD",
+    "date": 1546750800,
+    "description": "Chatime",
+    "id": 6,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 10,
+        "member_id": 1
+      }
+    ],
+    "category": "Food",
+    "currency": "CAD",
+    "date": 1546318800,
+    "description": "Shawarma",
+    "id": 1,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      },
+      {
+        "member_id": 3,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 45.5,
+        "member_id": 2
+      }
+    ],
+    "category": "Transportation",
+    "currency": "CAD",
+    "date": 1546405200,
+    "description": "Gas",
+    "id": 2,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 20,
+        "member_id": 1
+      }
+    ],
+    "category": "Groceries",
+    "currency": "CAD",
+    "date": 1546491600,
+    "description": "Loblaws",
+    "id": 3,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 500,
+        "member_id": 2
+      }
+    ],
+    "category": "Housing",
+    "currency": "CAD",
+    "date": 1546578000,
+    "description": "Rent",
+    "id": 4,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 30,
+        "member_id": 1
+      }
+    ],
+    "category": "Utilities",
+    "currency": "CAD",
+    "date": 1546664400,
+    "description": "Wifi",
+    "id": 5,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 5,
+        "member_id": 2
+      }
+    ],
+    "category": "Food",
+    "currency": "CAD",
+    "date": 1546750800,
+    "description": "Chatime",
+    "id": 6,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 10,
+        "member_id": 1
+      }
+    ],
+    "category": "Food",
+    "currency": "CAD",
+    "date": 1546318800,
+    "description": "Shawarma",
+    "id": 1,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      },
+      {
+        "member_id": 3,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 45.5,
+        "member_id": 2
+      }
+    ],
+    "category": "Transportation",
+    "currency": "CAD",
+    "date": 1546405200,
+    "description": "Gas",
+    "id": 2,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 20,
+        "member_id": 1
+      }
+    ],
+    "category": "Groceries",
+    "currency": "CAD",
+    "date": 1546491600,
+    "description": "Loblaws",
+    "id": 3,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 500,
+        "member_id": 2
+      }
+    ],
+    "category": "Housing",
+    "currency": "CAD",
+    "date": 1546578000,
+    "description": "Rent",
+    "id": 4,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 30,
+        "member_id": 1
+      }
+    ],
+    "category": "Utilities",
+    "currency": "CAD",
+    "date": 1546664400,
+    "description": "Wifi",
+    "id": 5,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 5,
+        "member_id": 2
+      }
+    ],
+    "category": "Food",
+    "currency": "CAD",
+    "date": 1546750800,
+    "description": "Chatime",
+    "id": 6,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 10,
+        "member_id": 1
+      }
+    ],
+    "category": "Food",
+    "currency": "CAD",
+    "date": 1546318800,
+    "description": "Shawarma",
+    "id": 1,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      },
+      {
+        "member_id": 3,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 45.5,
+        "member_id": 2
+      }
+    ],
+    "category": "Transportation",
+    "currency": "CAD",
+    "date": 1546405200,
+    "description": "Gas",
+    "id": 2,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 20,
+        "member_id": 1
+      }
+    ],
+    "category": "Groceries",
+    "currency": "CAD",
+    "date": 1546491600,
+    "description": "Loblaws",
+    "id": 3,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 500,
+        "member_id": 2
+      }
+    ],
+    "category": "Housing",
+    "currency": "CAD",
+    "date": 1546578000,
+    "description": "Rent",
+    "id": 4,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 30,
+        "member_id": 1
+      }
+    ],
+    "category": "Utilities",
+    "currency": "CAD",
+    "date": 1546664400,
+    "description": "Wifi",
+    "id": 5,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 5,
+        "member_id": 2
+      }
+    ],
+    "category": "Food",
+    "currency": "CAD",
+    "date": 1546750800,
+    "description": "Chatime",
+    "id": 6,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 5,
+        "member_id": 1
+      }
+    ],
+    "category": "Food",
+    "currency": "CAD",
+    "date": 1546837200,
+    "description": "Bubble Tea",
+    "id": 7,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 2.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 10,
+        "member_id": 1
+      },
+      {
+        "amount": 10,
+        "member_id": 2
+      }
+    ],
+    "category": "Fitness",
+    "currency": "CAD",
+    "date": 1546923600,
+    "description": "Rock Climbing",
+    "id": 8,
+    "ledger_id": 1,
+    "transfer": 0,
+    "weights": [
+      {
+        "member_id": 1,
+        "weight": 1.0
+      },
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  },
+  {
+    "amounts": [
+      {
+        "amount": 10,
+        "member_id": 1
+      }
+    ],
+    "category": "Transfer",
+    "currency": "CAD",
+    "date": 1547010000,
+    "description": "Transfer",
+    "id": 9,
+    "ledger_id": 1,
+    "transfer": 1,
+    "weights": [
+      {
+        "member_id": 2,
+        "weight": 1.0
+      }
+    ]
+  }
+]
