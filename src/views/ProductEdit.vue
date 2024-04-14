@@ -165,6 +165,20 @@
       </div>
 
       <!-- contribution amounts -->
+
+
+      <!-- Unequal Split and Recurring toggles -->
+      <div class="flex items-center mt-4">
+        <label for="link-checkbox" class="font-medium"><span
+            class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Unequal Split</span></label>
+        <input v-model="unequalSplit" @change="scrollToUnequalSplit" id="link-checkbox" type="checkbox" value=""
+               class="h-4 w-4 ml-3 text-blue-600 bg-gray-700 border-gray-600 rounded-lg focus:ring-0 ring-offset-gray-800">
+        <label for="link-checkbox-rec" class="ml-4 font-medium"><span
+            class="text-transparent bg-clip-text bg-gradient-to-r to-lime-600 from-indigo-400">Recurring</span></label>
+        <input v-model="recurringExpense" @change="scrollToRecurring" id="link-checkbox-red" type="checkbox" value=""
+               class="h-4 w-4 ml-3 text-blue-600 bg-gray-700 border-gray-600 rounded-lg focus:ring-0 ring-offset-gray-800">
+      </div>
+
       <div v-if="multiContribution">
         <hr class="my-5">
         <h2 class="text-white text-left font-bold pb-3">Contribution Amounts</h2>
@@ -189,20 +203,6 @@
           </div>
         </div>
       </div>
-
-      <!-- Unequal Split and Recurring toggles -->
-      <div class="flex items-center mt-4">
-        <label for="link-checkbox" class="font-medium"><span
-            class="text-transparent bg-clip-text bg-gradient-to-r to-emerald-600 from-sky-400">Unequal Split</span></label>
-        <input v-model="unequalSplit" @change="scrollToUnequalSplit" id="link-checkbox" type="checkbox" value=""
-               class="h-4 w-4 ml-3 text-blue-600 bg-gray-700 border-gray-600 rounded-lg focus:ring-0 ring-offset-gray-800">
-        <label for="link-checkbox-rec" class="ml-4 font-medium"><span
-            class="text-transparent bg-clip-text bg-gradient-to-r to-lime-600 from-indigo-400">Recurring</span></label>
-        <input v-model="recurringExpense" @change="scrollToRecurring" id="link-checkbox-red" type="checkbox" value=""
-               class="h-4 w-4 ml-3 text-blue-600 bg-gray-700 border-gray-600 rounded-lg focus:ring-0 ring-offset-gray-800">
-      </div>
-
-
       <!-- Unequal Split Options -->
       <div v-if="unequalSplit">
         <hr class="my-5">

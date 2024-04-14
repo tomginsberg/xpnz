@@ -11,17 +11,18 @@
             class="text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
           >
             {{ member }} → {{ members[(index + 1) % members.length] }}
-            <p
-              class="mt-1 font-normal tracking-tight text-gray-700 dark:text-gray-400"
-            >
-              ${{ Math.floor(Math.random() * 1000) + 1 }}
-            </p>
+
           </h2>
+          <p
+            class="mt-1 font-normal tracking-tight text-gray-700 dark:text-gray-400"
+          >
+            ${{ Math.floor(Math.random() * 1000) + 1 }}
+          </p>
         </div>
 
         <div>
           <button
-            class="rounded-lg dark:bg-gray-700 p-2 dark:text-white bg-gray-50 hover:text-blue-500"
+            class="rounded-lg p-2 shadow-lg bg-gray-200 dark:bg-gray-700 dark:text-white hover:text-blue-500"
           >
             <div class="flex">
               

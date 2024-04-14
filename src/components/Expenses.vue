@@ -42,7 +42,7 @@
             <button
               href="https://google.com"
               class="hover:text-blue-500"
-              @click="editTransaction"
+              @click="editProduct(item)"
             >
               <svg
                 class="h-6 w-6"
@@ -76,7 +76,6 @@
             <span
               v-for="(member, index) in item.by"
               :key="index"
-              :class="getColorClassShort(member)"
               class="text-small mx-1 rounded-lg"
             >
               {{ member }} (${{ item.contributions[index].toFixed(2) }})
@@ -88,7 +87,6 @@
               v-for="(member, index) in item.for"
               :key="index"
               class="text-small mx-1 rounded-lg"
-              :class="getColorClassShort(member)"
             >
               {{ member }} (${{ item.normalizedWeights[index].toFixed(2) }})
             </span>
@@ -110,11 +108,6 @@ const products = ref([]);
 const expandedCard = ref([]);
 const cardRefs = reactive({});
 
-function editTransaction(prod) {
-  const scrollPosition = window.scrollY;
-  localStorage.setItem("mainPageScrollPosition", scrollPosition.toString());
-  router.push(`/edit/${prod.id}`);
-}
 
 const searchTerm = inject("searchTerm");
 // Fuse.js setup
@@ -123,7 +116,7 @@ const options = {
   includeScore: true,
   ignoreLocation: true,
   threshold: 0.2, // Adjust for more/less strict matching
-  isCaseSensitive: false,
+  isCaseSensitive: false
 };
 
 const fuse = ref(new Fuse([], options));
@@ -140,11 +133,10 @@ const filteredProducts = computed(() => {
   return fuse.value.search(searchTerm.value).map((result) => result.item);
 });
 
-const expandedCardIndex = ref(0);
 const memberColors = ref({
   tom: "red",
   rhys: "blue",
-  dom: "green",
+  dom: "green"
 });
 
 function setCardRef(index) {
@@ -165,22 +157,13 @@ function toggleExpansion(index) {
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: 'smooth'
+        behavior: "smooth"
       });
     });
   }
 }
-function getColorClass(name) {
-  console.log(name);
-  const color = memberColors.value[name] || "red";
-  console.log(color);
-  return `inline-block text-xs font-medium mr-2 mb-2 px-2.5 py-0.5 rounded bg-${color}-900 text-${color}-200`;
-}
 
-function getColorClassShort(name) {
-  const color = memberColors.value[name] || "red";
-  return `bg-${color}-900 text-${color}-200`;
-}
+
 
 const editProduct = (prod) => {
   const scrollPosition = window.scrollY;

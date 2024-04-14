@@ -5,7 +5,7 @@
     <div class="flex flex-row">
       <h1
         class="flex-auto px-1 pt-1 text-lg font-semibold text-gray-800 dark:text-white"
-        :class="{ 'pb-3': home == 0 }"
+        :class="{ 'pb-3': home === 0 }"
       >
         {{ tabIcons[home] }}<span class="px-1" />
         {{ tabNames[home] }}
@@ -14,11 +14,11 @@
         <DarkMode />
       </div>
     </div>
-    <form class="max-w" v-if="home == 0">
+    <form class="max-w" v-if="home === 0">
       <label
         for="default-search"
         class="sr-only mb-2 text-sm font-medium text-gray-900 dark:text-white"
-        >Search</label
+      >Search</label
       >
       <div class="relative">
         <div
@@ -53,14 +53,14 @@
   </div>
 
   <div
-    class="pr-2 fixed bottom-4 left-1/2 z-50 h-16 w-[60%] max-w-lg -translate-x-1/2 rounded-full bg-gray-100 shadow-xl dark:bg-gray-700"
+    class="pr-2 fixed bottom-4 left-1/2 z-50 h-16 w-[60%] max-w-lg -translate-x-1/2 rounded-full bg-gray-200 shadow-xl dark:bg-gray-700"
   >
     <div
       class="mx-auto grid h-full max-w-lg grid-cols-4"
       id="default-tab"
       role="tablist"
     >
-    <div
+      <div
         id="tooltip-home"
         role="tooltip"
         class="tooltip invisible absolute z-10 inline-block rounded-lg bg-gray-900 px-3 py-2 text-sm font-medium text-white opacity-0 shadow-sm transition-opacity duration-300 dark:bg-gray-700"
@@ -70,6 +70,7 @@
       </div>
       <div class="flex items-center justify-center">
         <button
+          @click="newExpense"
           type="button"
           class="group inline-flex h-10 w-10 items-center justify-center rounded-full bg-blue-600 font-medium hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
         >
@@ -100,13 +101,10 @@
       >
         <span
           class="p-1 text-2xl"
-          :class="{ 'py-2 border-b dark:border-gray-600 border-gray-400': home == 0 }"
-          >{{ tabIcons[0] }}</span
+          :class="{ 'py-2 border-b dark:border-gray-600 border-gray-400': home === 0 }"
+        >{{ tabIcons[0] }}</span
         >
       </button>
-      
-
-    
 
 
       <button
@@ -116,8 +114,8 @@
       >
         <span
           class="p-1 text-2xl"
-          :class="{ 'py-2 border-b dark:border-gray-600 border-gray-400': home == 1 }"
-          >{{ tabIcons[1] }}</span
+          :class="{ 'py-2 border-b dark:border-gray-600 border-gray-400': home === 1 }"
+        >{{ tabIcons[1] }}</span
         >
       </button>
 
@@ -131,8 +129,8 @@
       >
         <span
           class="p-1 text-2xl"
-          :class="{ 'py-2 border-b dark:border-gray-600 border-gray-400': home == 2 }"
-          >{{ tabIcons[2] }}</span
+          :class="{ 'py-2 border-b dark:border-gray-600 border-gray-400': home === 2 }"
+        >{{ tabIcons[2] }}</span
         >
       </button>
 
@@ -140,13 +138,13 @@
   </div>
 
   <div id="default-tab-content">
-    <div v-show="home == 0">
+    <div v-show="home === 0">
       <Expenses />
     </div>
-    <div v-show="home == 1">
+    <div v-show="home === 1">
       <Members />
     </div>
-    <div v-show="home == 2">
+    <div v-show="home === 2">
       <Debts />
     </div>
   </div>
@@ -157,10 +155,17 @@ import DarkMode from "../components/DarkMode.vue";
 import Expenses from "../components/Expenses.vue";
 import Members from "../components/Members.vue";
 import Debts from "../components/Debts.vue";
-import { ref, provide, onMounted } from "vue";
+import { ref, provide } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
 
 const tabNames = ["Expenses", "Members", "Debts"];
 const tabIcons = ["💸", "🧑‍🤝‍🧑", "💳"];
+
+const newExpense = () => {
+  router.push(`/edit/new`);
+};
 
 const home = ref(0);
 const searchTerm = ref("");

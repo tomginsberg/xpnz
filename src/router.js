@@ -1,15 +1,15 @@
 import { createRouter, createWebHistory } from "vue-router";
-import ProductEdit from "./views/ProductEdit.vue";
-import ProductView from "./views/Main.vue";
+import Edit from "./views/Edit.vue";
+import View from "./views/Main.vue";
 
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
     { path: "/", component:
-      ProductView,
+      View,
       meta: { depth: 1 }},
     { path: "/edit/:productId",
-      component: ProductEdit,
+      component: Edit,
       meta: { depth: 2 } },
   ],
   scrollBehavior(to, from, savedPosition) {
