@@ -237,7 +237,7 @@ watch(totalContributions, (newValue) => {
 
       </div>
       <button id="dropdown-currency-button" data-dropdown-toggle="dropdown-currency"
-              class="flex-shrink-0 z-10 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-e-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
+              class="flex-shrink-0 z-4 inline-flex items-center py-2.5 px-4 text-sm font-medium text-center text-gray-900 bg-gray-100 border border-gray-300 rounded-e-lg hover:bg-gray-200 focus:ring-4 focus:outline-none focus:ring-gray-100 dark:bg-gray-700 dark:hover:bg-gray-600 dark:focus:ring-gray-700 dark:text-white dark:border-gray-600"
               type="button">
         <svg fill="none" aria-hidden="true" class="h-4 w-4 me-2" viewBox="0 0 20 15">
           <rect width="19.1" height="13.5" x=".25" y=".75" fill="#fff" stroke="#F5F5F5" stroke-width=".5" rx="1.75" />
@@ -259,7 +259,7 @@ watch(totalContributions, (newValue) => {
         </svg>
       </button>
       <div id="dropdown-currency"
-           class="z-10 hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-36 dark:bg-gray-700">
+           class="z-[6] hidden bg-white divide-y divide-gray-100 rounded-lg shadow w-36 dark:bg-gray-700">
         <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdown-currency-button">
 
           <li>
@@ -453,12 +453,11 @@ watch(totalContributions, (newValue) => {
     <footer ref="unequalSplitRef"></footer>
 
     <!-- Recurring Expense Options -->
-    <div v-if="recurringExpense">
-      <hr class="my-5">
-      <h2 class="text-white text-left font-bold pb-5">Recurring Expense</h2>
+    <div v-if="recurringExpense" class="text-gray-900 dark:text-white mt-5 rounded-lg border border-gray-300 dark:border-gray-600 py-3 px-4">
+      <p class="text-sm font-semibold mb-2">Recurring Expense</p>
       <div class="field">
         <div class="grid grid-cols-3 items-center">
-          <label for="frequency" class="text-white pl-2">Frequency:</label>
+          <label for="frequency" class="pl-2 text-sm">Frequency:</label>
           <div class="col-span-2">
             <Dropdown id="frequency" v-model="product.frequency"
                       :options="['Daily', 'Weekly', 'Monthly', 'Yearly']"
@@ -467,14 +466,14 @@ watch(totalContributions, (newValue) => {
           </div>
         </div>
         <div class="grid grid-cols-3 items-center mt-2">
-          <label for="end-date" class="text-white pl-2">End Date:</label>
+          <label for="end-date" class="pl-2 text-sm">End Date:</label>
           <div class="col-span-2 flex items-center">
             <Calendar v-model="product.endDate"
                       placeholder="(Optional)"
-                      inputClass="text-white bg-gray-950 p-2 rounded-lg border-gray-950 w-full"
+                      inputClass="p-2 w-full"
                       id="end-date" />
             <button type="button" @click="product.endDate = null"
-                    class="ml-2 text-white bg-red-500 hover:bg-red-600 p-2 rounded-lg transition ease-in-out duration-150">
+                    class="ml-2 text-white bg-red-600 hover:bg-red-700 p-2 rounded-lg transition ease-in-out duration-150">
               Clear
             </button>
           </div>

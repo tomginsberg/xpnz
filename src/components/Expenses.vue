@@ -133,12 +133,6 @@ const filteredProducts = computed(() => {
   return fuse.value.search(searchTerm.value).map((result) => result.item);
 });
 
-const memberColors = ref({
-  tom: "red",
-  rhys: "blue",
-  dom: "green"
-});
-
 function setCardRef(index) {
   return el => {
     if (el) cardRefs[index] = el;  // Assign the DOM element to the reactive object

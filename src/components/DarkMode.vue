@@ -1,13 +1,15 @@
 <template>
   <div class="pt-1">
+
     <button
+      @click="toggleTheme"
       id="theme-toggle"
       type="button"
       class="focus:ring-none rounded-lg p-1 text-sm text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-gray-200 dark:text-gray-400 dark:hover:bg-gray-800 dark:focus:ring-gray-800"
     >
-      <svg
+      <svg v-show="theme === 'light'"
         id="theme-toggle-dark-icon"
-        class="hidden h-5 w-5"
+        class="h-5 w-5"
         fill="currentColor"
         viewBox="0 0 20 20"
         xmlns="http://www.w3.org/2000/svg"
@@ -17,8 +19,9 @@
         ></path>
       </svg>
       <svg
+        v-show="theme === 'dark'"
         id="theme-toggle-light-icon"
-        class="hidden h-5 w-5"
+        class="h-5 w-5"
         fill="currentColor"
         viewBox="0 0 20 20"
         xmlns="http://www.w3.org/2000/svg"
@@ -32,6 +35,26 @@
     </button>
   </div>
 </template>
+
+<script setup>
+
+import { ref } from 'vue';
+
+const theme = ref(localStorage.getItem('color-theme') || 'light');
+
+function toggleTheme() {
+  const html = document.documentElement;
+  const dark = 'dark';
+  const light = 'light';
+  const currentTheme = localStorage.getItem('color-theme') || light;
+  const nextTheme = currentTheme === light ? dark : light;
+  theme.value = nextTheme;
+
+  html.classList.remove(currentTheme);
+  html.classList.add(nextTheme);
+  localStorage.setItem('color-theme', nextTheme);
+}
+</script>
 
 <style>
     .top-15 {

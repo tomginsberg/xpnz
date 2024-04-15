@@ -9,6 +9,7 @@ let transactionFormatted = transactions.map(cleanTransaction).sort((a, b) => b.d
 const transactionsIDs = mapByKey(transactionFormatted, "id");
 
 const expenseNames = ["Coffee Break ☕", "Pet Supplies 🐾", "Book Club 📚", "Movie Night 🎬", "Travel Fund ✈️", "Art Supplies 🎨", "Game Night 🎲", "Concert Tickets 🎟️", "Tech Gadgets 📱", "Gardening Tools 🌱", "Pizza Party 🍕", "Ice Cream Treats 🍦", "Sunday Brunch 🍳", "Fitness Club 🏋️", "Spa Day 💆", "Chocolate Stash 🍫", "Sushi Date 🍣", "Beach Day 🏖️", "Happy Hour 🍹", "Cheese Platter 🧀", "DIY Projects 🔨", "Tea Time 🫖", "Vegan Snacks 🥑", "Wine Night 🍷", "Burger Bash 🍔", "Music Streaming 🎵", "Magic Show 🎩", "Vintage Finds 🕰️", "Plant Babies 🪴", "Candle Collection 🕯️", "Makeup Magic 💄", "Baking Bonanza 🧁", "Holiday Gifts 🎁", "Car Wash 🚗", "Photography 📸", "Knitting Kit 🧶", "Craft Beer 🍺", "Smoothie Sips 🥤", "Science Fiction 🛸", "Sports Gear ⚽", "Picnic Party 🧺", "Comedy Club 😂", "Thrift Shopping 🛍️", "Aquarium Visit 🐠", "Skate Session 🛹", "Ballet Tickets 🩰", "Poetry Books 📖", "Farmers Market 🥦", "Star Gazing 🔭", "Puzzle Pieces 🧩", "Herbal Remedies 🌿", "Video Games 🎮", "Jazz Night 🎷", "Camping Trip ⛺", "Fast Food Frenzy 🍟", "New Sneakers 👟", "Online Course 🖥️", "Fishing Trip 🎣", "Tailgate Party 🍗", "Ghost Tour 👻"];
+const endpoint = "http://titanium/3000/api/";
 
 function cleanTransaction(item) {
   const totalAmount = item.amounts.reduce((sum, current) => sum + current.amount, 0);
@@ -160,11 +161,32 @@ export const ProductService = {
   getMemberName(id) {
     return memberIDToNames[id];
   },
+  settleDebt(fromMember, toMember, amount) {
+    console.log("Settling debt from", fromMember, "to", toMember, "amount", amount);
+    transactionFormatted.unshift({
+      price: amount,
+      category: "Settlement",
+      currency: "CAD",
+      date: new Date(),
+      name: fromMember + " → " + toMember,
+      id: "new",
+      by: [fromMember],
+      for: [toMember],
+      weights: [1],
+      normalizedWeights: [amount],
+      ledger_id: null,
+      transfer: false,
+      contributions: [amount],
+      expenseType: "Settlement",
+      isIncome: false
+    });
+
+  },
   async getProductById(id) {
     console.log("Getting product with id:", id);
     if (id === "new") {
       return {
-        price: '',
+        price: "",
         category: null,
         currency: "CAD",
         date: new Date(),
