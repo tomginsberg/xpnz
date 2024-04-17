@@ -18,7 +18,7 @@
       <label
         for="default-search"
         class="sr-only mb-2 text-sm font-medium text-gray-900 dark:text-white"
-      >Search</label
+        >Search</label
       >
       <div class="relative">
         <div
@@ -53,7 +53,7 @@
   </div>
 
   <div
-    class="pr-2 fixed bottom-4 left-1/2 z-50 h-16 w-[60%] max-w-lg -translate-x-1/2 rounded-full bg-gray-200 shadow-xl dark:bg-gray-700"
+    class="fixed bottom-4 left-1/2 z-50 h-16 w-[60%] max-w-lg -translate-x-1/2 rounded-full bg-gray-200 pr-2 shadow-xl dark:bg-gray-700"
   >
     <div
       class="mx-auto grid h-full max-w-lg grid-cols-4"
@@ -101,11 +101,12 @@
       >
         <span
           class="p-1 text-2xl"
-          :class="{ 'py-2 border-b dark:border-gray-600 border-gray-400': home === 0 }"
-        >{{ tabIcons[0] }}</span
+          :class="{
+            'border-b border-gray-400 py-2 dark:border-gray-600': home === 0,
+          }"
+          >{{ tabIcons[0] }}</span
         >
       </button>
-
 
       <button
         @click="home = 1"
@@ -114,11 +115,12 @@
       >
         <span
           class="p-1 text-2xl"
-          :class="{ 'py-2 border-b dark:border-gray-600 border-gray-400': home === 1 }"
-        >{{ tabIcons[1] }}</span
+          :class="{
+            'border-b border-gray-400 py-2 dark:border-gray-600': home === 1,
+          }"
+          >{{ tabIcons[1] }}</span
         >
       </button>
-
 
       <button
         id="dashboard-tab"
@@ -129,11 +131,12 @@
       >
         <span
           class="p-1 text-2xl"
-          :class="{ 'py-2 border-b dark:border-gray-600 border-gray-400': home === 2 }"
-        >{{ tabIcons[2] }}</span
+          :class="{
+            'border-b border-gray-400 py-2 dark:border-gray-600': home === 2,
+          }"
+          >{{ tabIcons[2] }}</span
         >
       </button>
-
     </div>
   </div>
 

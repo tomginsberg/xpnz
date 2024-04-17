@@ -1,5 +1,5 @@
 <template>
-  <div class="pt-[7.5rem]" id="profile" role="tabpanel">
+  <div class="pt-[7.25rem]" id="profile" role="tabpanel">
     <div
       class="my-3 grid w-full grid-flow-dense grid-cols-2 gap-3 px-3 pb-32 md:grid-cols-3 lg:grid-cols-5"
     >
@@ -9,11 +9,11 @@
         :key="index"
         :ref="setCardRef(index)"
         class="flex transform cursor-pointer flex-col justify-between text-wrap break-words rounded-lg p-4 text-black transition duration-150 ease-in-out active:scale-95 dark:text-gray-100"
-        :class="[(expandedCard[index] || filteredProducts.length === 1) ? 'row-span-2 dark:bg-gray-700 bg-gray-200' : 'bg-gray-100 dark:bg-gray-800',
-        // make random cards have row-span-2 or col-span-2 (or both)
-        // Math.random() > 0.75 ? 'row-span-2' : '',
-        // Math.random() > 0.75 ? 'col-span-2' : ''
-      ]"
+        :class="[
+          expandedCard[index] || filteredProducts.length === 1
+            ? 'row-span-2 bg-gray-200 dark:bg-gray-700'
+            : 'bg-gray-100 dark:bg-gray-800',
+        ]"
       >
         <div class="flex-auto">
           <div class="flex flex-row justify-between">
@@ -30,7 +30,10 @@
           </div>
         </div>
         <div>
-          <p class="font-normal text-gray-700 dark:text-gray-400">
+          <p
+            v-show="item.category !== ''"
+            class="font-normal text-gray-700 dark:text-gray-400"
+          >
             #{{ item.category }}
           </p>
           <div class="flex flex-row">
@@ -98,7 +101,16 @@
 </template>
 
 <script setup>
-import { ref, onMounted, inject, watch, computed, nextTick, reactive } from "vue";
+import {
+  ref,
+  onMounted,
+  watch,
+  computed,
+  nextTick,
+  reactive,
+  defineProps,
+} from "vue";
+import { useRoute } from "vue-router";
 import { ProductService } from "../service/ProductService.js";
 import Fuse from "fuse.js";
 import { useRouter } from "vue-router";
@@ -107,16 +119,17 @@ const router = useRouter();
 const products = ref([]);
 const expandedCard = ref([]);
 const cardRefs = reactive({});
+const route = useRoute();
 
-
-const searchTerm = inject("searchTerm");
+// const searchTerm = inject("searchTerm");
+const props = defineProps(["searchTerm"]);
 // Fuse.js setup
 const options = {
   keys: ["name", "category", "date", "price", "for", "by"],
   includeScore: true,
   ignoreLocation: true,
   threshold: 0.2, // Adjust for more/less strict matching
-  isCaseSensitive: false
+  isCaseSensitive: false,
 };
 
 const fuse = ref(new Fuse([], options));
@@ -127,15 +140,15 @@ watch(products, (newValue) => {
 
 // Computed property for filtered products
 const filteredProducts = computed(() => {
-  if (!searchTerm.value.trim()) {
+  if (!props.searchTerm.trim()) {
     return products.value;
   }
-  return fuse.value.search(searchTerm.value).map((result) => result.item);
+  return fuse.value.search(props.searchTerm).map((result) => result.item);
 });
 
 function setCardRef(index) {
-  return el => {
-    if (el) cardRefs[index] = el;  // Assign the DOM element to the reactive object
+  return (el) => {
+    if (el) cardRefs[index] = el; // Assign the DOM element to the reactive object
   };
 }
 
@@ -144,32 +157,43 @@ function toggleExpansion(index) {
   if (expandedCard.value[index]) {
     // Check if card is expanded and scroll it into view
     nextTick(() => {
-      const navbarOffset = 125;  // This is your navbar height in pixels, adjust if necessary
+      const navbarOffset = 125; // This is your navbar height in pixels, adjust if necessary
       const cardElement = cardRefs[index];
       const cardTop = cardElement.getBoundingClientRect().top;
       const offsetPosition = cardTop + window.pageYOffset - navbarOffset;
 
       window.scrollTo({
         top: offsetPosition,
-        behavior: "smooth"
+        behavior: "smooth",
       });
     });
   }
 }
 
-
-
 const editProduct = (prod) => {
   const scrollPosition = window.scrollY;
   localStorage.setItem("mainPageScrollPosition", scrollPosition.toString());
-  router.push(`/edit/${prod.id}`);
+  router.push(`${route.params.ledgerId}/edit/${prod.id}`);
 };
 
-onMounted(() => {
-  ProductService.getProductsData().then((data) => {
-    products.value = data;
-    expandedCard.value = Array(data.length).fill(false);
-    expandedCard[0] = true;
+// useRouter
+
+onMounted(async () => {
+  const ledgerID = route.params.ledgerId;
+  const data = await ProductService.getProductsData(ledgerID);
+  if (!data) {
+    router.push("/");
+    return;
+  }
+  products.value = data;
+  expandedCard.value = Array(data.length).fill(false);
+  expandedCard[0] = true;
+  nextTick(() => {
+    const savedPosition = localStorage.getItem("mainPageScrollPosition");
+    if (savedPosition) {
+      window.scrollTo({ top: parseInt(savedPosition), behavior: "auto" });
+      localStorage.removeItem("mainPageScrollPosition");
+    }
   });
 });
 </script>

@@ -1,16 +1,18 @@
 import { createRouter, createWebHistory } from "vue-router";
 import Edit from "./views/Edit.vue";
-import View from "./views/Main.vue";
+import Expenses from "./views/Expenses.vue";
+import Members from "./views/Members.vue";
+import Debts from "./views/Debts.vue";
+import Home from "./views/Home.vue";
 
 export const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: "/", component:
-      View,
-      meta: { depth: 1 }},
-    { path: "/edit/:productId",
-      component: Edit,
-      meta: { depth: 2 } },
+    { path: "/", component: Home }, // Redirect to home if no ledgerId is provided
+    { path: "/:ledgerId/edit/:productId", component: Edit },
+    { path: "/:ledgerId", component: Expenses },
+    { path: "/:ledgerId/members", component: Members },
+    { path: "/:ledgerId/debts", component: Debts },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
