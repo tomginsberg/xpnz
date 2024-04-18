@@ -44,7 +44,15 @@ function toggleDropdown() {
 
 function selectCurrency(currency) {
   product.value.currency = currency;
-  showDropdown.value = false;
+  document.getElementById("dropdown-currency-button").click();
+  // showDropdown.value = false;
+  // remove class block from id='dropdown-currency' and add class hidden
+}
+
+function openDropdown() {
+  const dropdown = document.getElementById("dropdown-currency");
+  dropdown.classList.remove("hidden");
+  dropdown.classList.add("block");
 }
 
 const weights = ref([]);
@@ -277,7 +285,7 @@ watch(totalContributions, (newValue) => {
       </div>
 
       <button
-        @click="toggleDropdown"
+        data-dropdown-toggle="dropdown-currency"
         id="dropdown-currency-button"
         class="z-[6] inline-flex flex-shrink-0 items-center rounded-e-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-center text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-700"
         type="button"
@@ -303,15 +311,7 @@ watch(totalContributions, (newValue) => {
       </button>
       <div
         id="dropdown-currency"
-        class="z-[6] w-36 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
-        :class="[showDropdown ? 'block' : 'hidden']"
-        style="
-          position: absolute;
-          inset: 0px auto auto 0px;
-          margin: 0px;
-          transform: translate3d(267.429px, 222.095px, 0px);
-        "
-        data-popper-placement="bottom"
+        class="z-[6] hidden w-36 divide-y divide-gray-100 rounded-lg bg-white shadow dark:bg-gray-700"
       >
         <ul
           class="py-2 text-sm text-gray-700 dark:text-gray-200"
