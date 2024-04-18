@@ -4,6 +4,7 @@ import { ref, onMounted, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { ProductService } from "../service/ProductService";
 import VueInputCalculator from "vue-input-calculator";
+import { initFlowbite } from "flowbite";
 
 import MultiSelect from "primevue/multiselect";
 import Calendar from "primevue/calendar";
@@ -26,7 +27,6 @@ const unequalSplit = ref(false);
 const contributions = ref([]);
 const deleteModal = ref(false);
 const byMembers = ref([]);
-import { initFlowbite } from "flowbite";
 import Dialog from "primevue/dialog";
 
 const date = ref(null);
@@ -38,6 +38,7 @@ const flagEmoji = {
 };
 const currencies = ["CAD", "USD", "EUR"];
 const showDropdown = ref(false);
+
 function toggleDropdown() {
   showDropdown.value = !showDropdown.value;
 }
@@ -45,14 +46,6 @@ function toggleDropdown() {
 function selectCurrency(currency) {
   product.value.currency = currency;
   document.getElementById("dropdown-currency-button").click();
-  // showDropdown.value = false;
-  // remove class block from id='dropdown-currency' and add class hidden
-}
-
-function openDropdown() {
-  const dropdown = document.getElementById("dropdown-currency");
-  dropdown.classList.remove("hidden");
-  dropdown.classList.add("block");
 }
 
 const weights = ref([]);
@@ -645,6 +638,7 @@ watch(totalContributions, (newValue) => {
 .dropdown-hidden {
   display: none;
 }
+
 .dropdown-visible {
   display: block;
 }
