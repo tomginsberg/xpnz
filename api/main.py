@@ -121,6 +121,8 @@ for file in glob('ledgers/*.json'):
                                                                           .sort_values('date', ascending=False))
     ledgers[ledger_id].reset_index(drop=True, inplace=True)
     ledgers[ledger_id]['id'] = ledgers[ledger_id].index
+    # round converted_total to 2 decimal places
+    ledgers[ledger_id]['converted_total'] = ledgers[ledger_id]['converted_total'].apply(lambda x: round(x, 2))
     cats = get_categories(ledgers[ledger_id])
     cats.discard('')
     cats.union(expense_categories)
