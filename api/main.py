@@ -39,7 +39,7 @@ expense_categories = {
     "📶 Internet",
     "🚿 Water",
     "🔥 Gas",
-    "⚡ Hydro"
+    "⚡ Hydro",
     "❓Misc"
 }
 
