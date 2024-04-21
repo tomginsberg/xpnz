@@ -120,7 +120,7 @@ for file in glob('ledgers/*.json'):
     ledgers[ledger_id := os.path.basename(file).removesuffix('.json')] = (pd.read_json(file)
                                                                           .sort_values('date', ascending=False))
     ledgers[ledger_id].reset_index(drop=True, inplace=True)
-    ledgers[ledger_id].id = ledgers[ledger_id].index
+    ledgers[ledger_id]['id'] = ledgers[ledger_id].index
     cats = get_categories(ledgers[ledger_id])
     cats.discard('')
     cats.union(expense_categories)
