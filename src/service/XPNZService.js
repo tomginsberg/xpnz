@@ -1,7 +1,7 @@
 // import axios
 import axios from "axios";
 
-const endpoint = "http://orion:8000/";
+const endpoint = "http://titanium:8000/";
 
 const expenseNames = [
   "Coffee Break ☕",
