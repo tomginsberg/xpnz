@@ -181,13 +181,6 @@ def read_balances(ledger: str):
     return balances[ledger]
 
 
-import yaml
-
-
-def nested_dict_print(d, indent=0):
-    print(yaml.dump(d, default_flow_style=False, indent=4))
-
-
 @app.post("/transaction/edit/")
 async def edit_transaction(transaction: Request):
     transaction = await transaction.json()
@@ -241,7 +234,6 @@ async def edit_transaction(transaction: Request):
         transaction['recurring'] = False
 
     transaction['date'] = pd.to_datetime(transaction['date'].split('T')[0])
-    nested_dict_print(transaction)
 
     ledger = ledgers[ledger_name]
     if id_ == 'new':
