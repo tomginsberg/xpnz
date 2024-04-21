@@ -44,6 +44,7 @@
           expandedCard[index] || filteredProducts.length === 1
             ? 'col-span-2 row-span-2 bg-gray-200 dark:bg-gray-700'
             : 'bg-gray-100 dark:bg-gray-800',
+          isLong(item),
         ]"
       >
         <div class="flex-auto">
@@ -51,7 +52,7 @@
             <h2
               class="mr-3 truncate text-balance text-lg font-bold tracking-tight text-gray-900 dark:text-white"
             >
-              {{ item.name }}
+              {{ getName(item) }}
             </h2>
             <p
               class="mt-[0.1rem] truncate font-normal tracking-tight text-gray-700 dark:text-gray-400"
@@ -66,10 +67,10 @@
         </div>
         <div>
           <p
-            v-show="item.category !== ''"
+            v-show="getCategory(item) !== ''"
             class="font-normal text-gray-700 dark:text-gray-400"
           >
-            {{ item.category }}
+            {{ getCategory(item) }}
           </p>
           <div class="flex flex-row">
             <p
@@ -196,6 +197,28 @@ function setCardRef(index) {
   return (el) => {
     if (el) cardRefs[index] = el; // Assign the DOM element to the reactive object
   };
+}
+const width = window.innerWidth;
+function isLong(item) {
+  if (width < 500) {
+    // check is name is not null and is longer than 20 characters
+    if (item.name) {
+      if (item.name.length > 19) {
+        return "col-span-2";
+      }
+    } else if (item.category && item.category.length > 19) {
+      return "col-span-2";
+    }
+  }
+}
+
+function getName(item) {
+  return item.name ? item.name : item.category;
+}
+
+function getCategory(item) {
+  // if there is no name make the category ''
+  return item.name ? item.category : "";
 }
 
 function toggleExpansion(index) {

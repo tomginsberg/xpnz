@@ -128,8 +128,8 @@ function selectCurrency(selectedCurrency) {
 
 function saveExpense() {
   // so some validation
-  if (name.value === "") {
-    alert("Please enter a name for the expense");
+  if (name.value === "" && category.value === "") {
+    alert(`Please enter a name or a category for the ${expenseType}`);
     return;
   }
   if (amount.value === null || amount.value === 0) {
@@ -638,8 +638,8 @@ watch(forMembers, (newVal, oldVal) => {
               id="frequency"
               v-model="frequency"
               :options="['Daily', 'Weekly', 'Monthly', 'Yearly']"
-              class="w-full bg-gray-950"
-              inputClass="text-white p-2 w-full"
+              class="w-full"
+              inputClass="w-full"
             />
           </div>
         </div>
@@ -649,7 +649,7 @@ watch(forMembers, (newVal, oldVal) => {
             <Calendar
               v-model="endDate"
               placeholder="(Optional)"
-              inputClass="p-2 w-full"
+              inputClass="w-full"
               id="end-date"
             />
             <button

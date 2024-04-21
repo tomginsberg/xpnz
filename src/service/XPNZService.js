@@ -1,7 +1,7 @@
 // import axios
 import axios from "axios";
 
-const endpoint = "http://titanium:8000/";
+const endpoint = "http://orion:8000/";
 
 const expenseNames = [
   "Coffee Break ☕",
@@ -266,17 +266,10 @@ export const XPNZService = {
         return response.data;
       });
   },
-  settleDebt(ledgerId, fromMember, toMember, amount) {
+  settleDebt(debtData) {
     // post to endpoint /settleDebt with key ledgerId
-    return axios
-      .post(endpoint + "settle", {
-        ledger_id: ledgerId,
-        fromMember: fromMember,
-        toMember: toMember,
-        amount: amount,
-      })
-      .then((response) => {
-        return response.data;
-      });
+    return axios.post(endpoint + "settle/", debtData).then((response) => {
+      return response.data;
+    });
   },
 };

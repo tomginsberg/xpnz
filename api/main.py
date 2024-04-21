@@ -22,6 +22,8 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
+# don't settle debts less than this amount
+CUTOFF = 0.1
 expense_categories = {
     "🛒 Groceries",
     "🍽️ Food",
@@ -99,16 +101,19 @@ def get_balances(tr, members=None):
         for name, amount in zip(for_['members'], for_['split_values']):
             if name in balances:
                 balances[name] -= float(amount) * ex
-    # round to 2 decimal places
     for name in balances:
-        balances[name] = round(balances[name], 2)
+        if abs(balances[name]) < CUTOFF:
+            balances[name] = 0
+        else:
+            balances[name] = round(balances[name], 2)
+
     return balances
 
 
 def get_settlements(tr, members=None):
     balances = get_balances(tr, members)
     s = settle(balances)
-    return [(a, b, x) for a, b, c in s if (x := round(c, 2)) != 0]
+    return [(a, b, x) for a, b, c in s if abs(x := round(c, 2)) >= CUTOFF]
 
 
 balances: dict[str, dict[str, float]] = {}
@@ -179,6 +184,7 @@ def read_categories(ledger: str) -> set[str]:
 
 @app.get("/balances/get/")
 def read_balances(ledger: str):
+    print(f'Getting balances for {ledger}')
     check_ledger(ledger)
     return balances[ledger]
 
@@ -249,6 +255,46 @@ async def edit_transaction(transaction: Request):
         ledger.iloc[int(id_)] = transaction
 
     # sort ledger by date
+    ledger = ledger.sort_values('date', ascending=False)
+    ledger.reset_index(drop=True, inplace=True)
+    ledger['id'] = ledger.index
+    ledgers[ledger_name] = ledger
+    balances[ledger_name] = get_balances(ledger, members[ledger_name])
+    settlements[ledger_name] = get_settlements(ledger, members[ledger_name])
+    ledger.to_json(f'ledgers/{ledger_name}.json', orient='records')
+    return status.HTTP_200_OK
+
+
+@app.post("/settle/")
+async def settle_debt(data: Request):
+    data = await data.json()
+    ledger_name = data['ledger']
+    check_ledger(ledger_name)
+    ledger = ledgers[ledger_name]
+    amount = abs(float(data['amount']))
+    print(f'Settling {amount} from {data["from"]} to {data["to"]}')
+    transaction = {
+        'by': {
+            'members': [data['from']],
+            'split_values': [amount],
+            'total': amount
+        },
+        'for': {
+            'members': [data['to']],
+            'split_weights': [1],
+            'split_values': [amount],
+            'total': 1
+        },
+        'name': f'{data["from"]} → {data["to"]}',
+        'category': '💸 Transfer',
+        'currency': 'CAD',
+        'date': pd.to_datetime(datetime.date.today()),
+        'recurring': False,
+        'expense_type': 'transfer',
+        'converted_total': amount,
+        'exchange_rate': 1
+    }
+    ledger = pd.concat([ledger, pd.DataFrame([transaction])])
     ledger = ledger.sort_values('date', ascending=False)
     ledger.reset_index(drop=True, inplace=True)
     ledger['id'] = ledger.index

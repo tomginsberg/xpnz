@@ -136,10 +136,10 @@ import { XPNZService } from "../service/XPNZService.js";
 
 const debts = ref([]);
 const route = useRoute();
+const ledgerID = route.params.ledgerId;
 const loaded = ref(false);
 onMounted(async () => {
   initFlowbite();
-  const ledgerID = route.params.ledgerId;
   debts.value = await XPNZService.getDebts(ledgerID);
   loaded.value = true;
 });
@@ -164,6 +164,11 @@ function settleDebt(memberFrom, memberTo, amount) {
     (debt) =>
       debt[0] !== memberFrom || debt[1] !== memberTo || debt[2] !== amount,
   );
-  ProductService.settleDebt(memberFrom, memberTo, amount);
+  XPNZService.settleDebt({
+    ledger: ledgerID,
+    from: memberFrom,
+    to: memberTo,
+    amount: amount,
+  });
 }
 </script>
