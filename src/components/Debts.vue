@@ -47,6 +47,21 @@
         </div>
       </div>
     </div>
+    <div
+      v-if="debts.length === 0 && loaded"
+      class="flex flex-col items-center justify-center"
+    >
+      <h2
+        class="px-8 pt-16 text-center font-mono text-2xl font-bold text-gray-900 dark:text-white"
+      >
+        Looking good! <br />No debts to settle.
+      </h2>
+      <img
+        class="my-8 max-w-xs object-contain px-8"
+        src="https://fonts.gstatic.com/s/e/notoemoji/latest/1f9a7/512.gif"
+        alt="🦧"
+      />
+    </div>
   </div>
 
   <div class="flex justify-center">
@@ -116,9 +131,17 @@ import { onMounted, ref } from "vue";
 import Dialog from "primevue/dialog";
 import { ProductService } from "../service/ProductService.js";
 import { initFlowbite } from "flowbite";
+import { useRoute } from "vue-router";
+import { XPNZService } from "../service/XPNZService.js";
 
-onMounted(() => {
+const debts = ref([]);
+const route = useRoute();
+const loaded = ref(false);
+onMounted(async () => {
   initFlowbite();
+  const ledgerID = route.params.ledgerId;
+  debts.value = await XPNZService.getDebts(ledgerID);
+  loaded.value = true;
 });
 
 const settleVisible = ref(false);
@@ -143,11 +166,4 @@ function settleDebt(memberFrom, memberTo, amount) {
   );
   ProductService.settleDebt(memberFrom, memberTo, amount);
 }
-
-const debts = ref([
-  ["tom", "jerry", 22],
-  ["jerry", "spike", 33],
-  ["spike", "tyke", 44],
-  ["tom", "tyke", 55],
-]);
 </script>

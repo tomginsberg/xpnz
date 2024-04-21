@@ -1,6 +1,13 @@
 <script setup>
 import DarkMode from "./DarkMode.vue";
-import { defineProps, defineEmits, provide, ref } from "vue";
+import { defineProps, defineEmits, ref } from "vue";
+import { useRouter } from "vue-router";
+
+const router = useRouter();
+
+function home() {
+  router.push(`/`);
+}
 
 const tabNames = ["Expenses", "Members", "Debts"];
 const tabIcons = ["💸", "🧑‍🤝‍🧑", "💳"];
@@ -16,6 +23,7 @@ const emit = defineEmits(["update:modelValue"]); // Emit this event to update th
 function updateInput(event) {
   emit("update:modelValue", event.target.value); // Update the bound value on input
 }
+
 // provide("searchTerm", searchTerm);
 </script>
 
@@ -28,7 +36,8 @@ function updateInput(event) {
         class="flex-auto px-1 pt-1 text-lg font-semibold text-gray-800 dark:text-white"
         :class="{ 'pb-3': pageID === 0 }"
       >
-        {{ tabIcons[pageID] }}<span class="px-1" />
+        <button @click="home">{{ tabIcons[pageID] }}</button
+        ><span class="px-1" />
         {{ tabNames[pageID] }}
       </h1>
       <div class="z-100">

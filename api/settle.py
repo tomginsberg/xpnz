@@ -34,6 +34,8 @@ def pop_key(d):
 
 
 def settle_recursive(pos, neg):
+    if len(pos) == 0 or len(neg) == 0:
+        return []
     if len(pos) == 1:
         x = pop_key(pos)
         return [(a, x, b) for a, b in neg.items()]

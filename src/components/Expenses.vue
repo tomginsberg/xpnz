@@ -1,5 +1,36 @@
 <template>
   <div class="pt-[7.25rem]" id="profile" role="tabpanel">
+    <div v-if="products.length === 0 && loaded">
+      <h2
+        class="px-8 pt-64 text-center text-2xl font-bold text-gray-900 dark:text-white"
+      >
+        Add an expense to get started<br />↓
+      </h2>
+
+      <div class="flex items-center justify-center">
+        <button
+          @click="newExpense"
+          type="button"
+          class="pulsing-border group inline-flex h-16 w-16 items-center justify-center rounded-full bg-blue-600 font-medium hover:bg-blue-700 hover:bg-green-500 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+        >
+          <svg
+            class="h-6 w-6 text-white"
+            aria-hidden="true"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 18 18"
+          >
+            <path
+              stroke="currentColor"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M9 1v16M1 9h16"
+            />
+          </svg>
+        </button>
+      </div>
+    </div>
     <div
       class="my-3 grid w-full grid-flow-dense grid-cols-2 gap-3 px-3 pb-32 md:grid-cols-3 lg:grid-cols-5"
     >
@@ -11,21 +42,25 @@
         class="flex transform cursor-pointer flex-col justify-between text-wrap break-words rounded-lg p-4 text-black transition duration-150 ease-in-out active:scale-95 dark:text-gray-100"
         :class="[
           expandedCard[index] || filteredProducts.length === 1
-            ? 'row-span-2 bg-gray-200 dark:bg-gray-700'
+            ? 'col-span-2 row-span-2 bg-gray-200 dark:bg-gray-700'
             : 'bg-gray-100 dark:bg-gray-800',
         ]"
       >
         <div class="flex-auto">
-          <div class="flex flex-row justify-between">
+          <div class="flex flex-wrap justify-between">
             <h2
-              class="basis-3/4 text-2xl font-bold tracking-tight text-gray-900 dark:text-white"
+              class="mr-3 truncate text-balance text-lg font-bold tracking-tight text-gray-900 dark:text-white"
             >
               {{ item.name }}
             </h2>
             <p
-              class="mt-1 font-normal tracking-tight text-gray-700 dark:text-gray-400"
+              class="mt-[0.1rem] truncate font-normal tracking-tight text-gray-700 dark:text-gray-400"
             >
-              ${{ item.price }}
+              {{
+                item.converted_total > 0
+                  ? "$" + item.converted_total
+                  : "+ $" + Math.abs(item.converted_total)
+              }}
             </p>
           </div>
         </div>
@@ -34,13 +69,13 @@
             v-show="item.category !== ''"
             class="font-normal text-gray-700 dark:text-gray-400"
           >
-            #{{ item.category }}
+            {{ item.category }}
           </p>
           <div class="flex flex-row">
             <p
               class="flex-auto font-normal tracking-tight text-gray-700 dark:text-gray-400"
             >
-              {{ item.date.toISOString().split("T")[0] }}
+              {{ item.date.split("T")[0] }}
             </p>
             <button
               href="https://google.com"
@@ -72,26 +107,28 @@
           <hr class="mb-3 mt-3 border-gray-300 dark:border-gray-600" />
           <!-- show item.expenseType -->
           <div class="pb-2">
-            Type: <span class="font-bold">{{ item.expenseType }}</span>
+            Type: <span class="font-bold">{{ item["expense_type"] }}</span>
           </div>
           <div class="flex w-full flex-wrap">
             <span class="mr-1">Paid:</span>
             <span
-              v-for="(member, index) in item.by"
+              v-for="(member, index) in item.by.members"
               :key="index"
               class="text-small mx-1 rounded-lg"
             >
-              {{ member }} (${{ item.contributions[index].toFixed(2) }})
+              {{ member }} ({{ currencySymbols[item.currency]
+              }}{{ item.by["split_values"][index].toFixed(2) }})
             </span>
           </div>
           <div class="flex w-full flex-wrap">
             <span class="mr-1">Split:</span>
             <span
-              v-for="(member, index) in item.for"
+              v-for="(member, index) in item.for.members"
               :key="index"
               class="text-small mx-1 rounded-lg"
             >
-              {{ member }} (${{ item.normalizedWeights[index].toFixed(2) }})
+              {{ member }} ({{ currencySymbols[item.currency]
+              }}{{ item.for["split_values"][index].toFixed(2) }})
             </span>
           </div>
         </div>
@@ -112,8 +149,10 @@ import {
 } from "vue";
 import { useRoute } from "vue-router";
 import { ProductService } from "../service/ProductService.js";
+import { XPNZService } from "../service/XPNZService.js";
 import Fuse from "fuse.js";
 import { useRouter } from "vue-router";
+import Skeleton from "./Skeleton.vue";
 
 const router = useRouter();
 const products = ref([]);
@@ -125,13 +164,20 @@ const route = useRoute();
 const props = defineProps(["searchTerm"]);
 // Fuse.js setup
 const options = {
-  keys: ["name", "category", "date", "price", "for", "by"],
+  keys: ["name", "category", "date", "for", "by"],
   includeScore: true,
   ignoreLocation: true,
   threshold: 0.2, // Adjust for more/less strict matching
   isCaseSensitive: false,
 };
 
+const currencySymbols = {
+  USD: "US$",
+  EUR: "€",
+  CAD: "$",
+};
+
+const loaded = ref(false);
 const fuse = ref(new Fuse([], options));
 
 watch(products, (newValue) => {
@@ -180,15 +226,17 @@ const editProduct = (prod) => {
 
 onMounted(async () => {
   const ledgerID = route.params.ledgerId;
-  const data = await ProductService.getProductsData(ledgerID);
-  if (!data) {
-    router.push("/");
+  const data = await XPNZService.getTransactions(ledgerID);
+  const members = await XPNZService.getActiveMembers(ledgerID);
+  if (members.length === 0) {
+    await router.push(`/${ledgerID}/members`);
     return;
   }
   products.value = data;
+
   expandedCard.value = Array(data.length).fill(false);
-  expandedCard[0] = true;
-  nextTick(() => {
+  loaded.value = true;
+  await nextTick(() => {
     const savedPosition = localStorage.getItem("mainPageScrollPosition");
     if (savedPosition) {
       window.scrollTo({ top: parseInt(savedPosition), behavior: "auto" });
@@ -196,4 +244,23 @@ onMounted(async () => {
     }
   });
 });
+
+const newExpense = () => {
+  router.push(`/${route.params.ledgerId}/edit/new`);
+};
 </script>
+
+<style scoped>
+@keyframes pulse-border {
+  0% {
+    box-shadow: 0 0 0 0px rgba(34, 197, 94, 0.75);
+  }
+  100% {
+    box-shadow: 0 0 0 10px rgba(34, 197, 94, 0);
+  }
+}
+
+.pulsing-border {
+  animation: pulse-border 2s infinite;
+}
+</style>

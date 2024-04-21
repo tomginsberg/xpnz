@@ -1,43 +1,57 @@
 import datetime
 import json
+import math
 import os
 from glob import glob
 
 import pandas as pd
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from pydantic import BaseModel
 from starlette import status
+from fastapi.middleware.cors import CORSMiddleware
 
 from settle import settle
+import requests
 
 app = FastAPI()
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=['*'],  # Allows specified origins (you can use ["*"] for all origins)
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 expense_categories = {
-    "Rent",
-    "Utilities",
-    "Groceries",
-    "Dining",
-    "Transportation",
-    "Maintenance",
-    "Insurance",
-    "Health",
-    "Education",
-    "Entertainment",
-    "Clothing",
-    "Travel",
-    "Gifts",
-    "Household",
-    "Childcare",
-    "Subscriptions",
-    "Transfer"
+    "🛒 Groceries",
+    "🍽️ Food",
+    "⛽ Gas",
+    "💡 Utilities",
+    "🏡 Household",
+    "🏠 Rent",
+    "🛠️ Maintenance",
+    "🛡️ Insurance",
+    "🏥 Health",
+    "🎬 Entertainment",
+    "👗 Clothing",
+    "📚 Subscriptions",
+    "💸 Transfer",
+    "📶 Internet",
+    "🚿 Water",
+    "🔥 Gas",
+    "⚡ Hydro"
+    "❓Misc"
 }
 
 
+def exchange_rates(currencies: tuple[str] = ('USD', 'EUR')):
+    r = requests.get('https://open.er-api.com/v6/latest/CAD').json()
+    return {c: 1 / r['rates'][c] for c in currencies}
+
+
 class TransactionFor(BaseModel):
-    members: list[str]
-    split_values: list[float]
     split_weights: list[float]
-    total: float
+    members: list[str]
 
 
 class TransactionBy(BaseModel):
@@ -46,16 +60,21 @@ class TransactionBy(BaseModel):
     total: float
 
 
+class Recurring(BaseModel):
+    frequency: str
+    end_date: datetime.date
+
+
 class Transaction(BaseModel):
-    paid_by: TransactionBy
-    currency: str
-    paid_for: TransactionFor
+    ledger: str
     name: str
     category: str
-    date: datetime.datetime
-    exchange_rate: float
-    converted_total: float
+    by: TransactionBy
+    to: TransactionFor
     expense_type: str
+    currency: str
+    date: datetime.date
+    recurring: Recurring
 
 
 def get_members(tr):
@@ -69,92 +88,181 @@ def get_categories(tr) -> set[str]:
     return set(tr['category'])
 
 
-ledgers: dict[str, pd.DataFrame] = {}
-categories: dict[str, set[str]] = {}
-members: dict[str, set[str]] = {}
-for file in glob('ledgers/*.json'):
-    ledgers[ledger_id := os.path.basename(file).removesuffix('.json')] = pd.read_json(file).sort_values('date',
-                                                                                                        ascending=False)
-    cats = get_categories(ledgers[ledger_id])
-    cats.remove('')
-    cats.union(expense_categories)
-    categories[ledger_id] = cats
-    members[ledger_id] = set(json.load(open(f'members/{ledger_id}.json')))
-
-
 def get_balances(tr, members=None):
     if members is None:
         members = get_members(tr)
     balances = {name: 0 for name in members}
     for by, for_, ex in zip(tr['by'], tr['for'], tr['exchange_rate']):
         for name, amount in zip(by['members'], by['split_values']):
-            balances[name] += float(amount) * ex
+            if name in balances:
+                balances[name] += float(amount) * ex
         for name, amount in zip(for_['members'], for_['split_values']):
-            balances[name] -= float(amount) * ex
+            if name in balances:
+                balances[name] -= float(amount) * ex
+    # round to 2 decimal places
+    for name in balances:
+        balances[name] = round(balances[name], 2)
     return balances
 
 
 def get_settlements(tr, members=None):
     balances = get_balances(tr, members)
-    return settle(balances)
+    s = settle(balances)
+    return [(a, b, x) for a, b, c in s if (x := round(c, 2)) != 0]
+
+
+balances: dict[str, dict[str, float]] = {}
+ledgers: dict[str, pd.DataFrame] = {}
+categories: dict[str, set[str]] = {}
+members: dict[str, set[str]] = {}
+settlements: dict[str, list[tuple[str, str, float]]] = {}
+for file in glob('ledgers/*.json'):
+    ledgers[ledger_id := os.path.basename(file).removesuffix('.json')] = (pd.read_json(file)
+                                                                          .sort_values('date', ascending=False))
+    ledgers[ledger_id].reset_index(drop=True, inplace=True)
+    ledgers[ledger_id].id = ledgers[ledger_id].index
+    cats = get_categories(ledgers[ledger_id])
+    cats.discard('')
+    cats.union(expense_categories)
+    categories[ledger_id] = cats
+    members[ledger_id] = set(json.load(open(f'members/{ledger_id}.json')))
+    balances[ledger_id] = get_balances(ledgers[ledger_id], members[ledger_id])
+    settlements[ledger_id] = get_settlements(ledgers[ledger_id], members[ledger_id])
 
 
 def check_ledger(ledger: str):
     if ledger not in ledgers:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Ledger not found")
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Ledger {ledger} not found")
 
 
-@app.get("/transactions/get/")
-def read_transactions(ledger: str):
+@app.get("/ledger/get/")
+def get_transactions(ledger: str) -> list[dict]:
     check_ledger(ledger)
     return ledgers[ledger].to_dict(orient='records')
 
 
-@app.get("/settlements/")
-def read_settlements(ledger: str):
+class TransactionID(BaseModel):
+    ledger: str
+    transaction_id: int
+
+
+@app.get("/transaction/get/")
+def get_transaction(ledger: str, transaction_id: int) -> list[dict]:
     check_ledger(ledger)
-    tr = ledgers[ledger]
-    return get_settlements(tr)
+    ledger = ledgers[ledger]
+    assert ledger.iloc[transaction_id].id == transaction_id
+    return [ledger.iloc[transaction_id].to_dict()]
+
+
+@app.get("/settlements/get/")
+def read_settlements(ledger: str) -> list[tuple[str, str, float]]:
+    check_ledger(ledger)
+    return settlements[ledger]
 
 
 @app.get("/members/get/")
-def read_members(ledger: str):
+def read_members(ledger: str) -> set[str]:
     check_ledger(ledger)
     return members[ledger]
 
 
-@app.get("/categories/")
-def read_categories(ledger: str):
+@app.get("/categories/get/")
+def read_categories(ledger: str) -> set[str]:
     check_ledger(ledger)
     tr = ledgers[ledger]
     cats = get_categories(tr) | expense_categories
-    cats.remove('')
+    cats.discard('')
     return cats
 
 
-@app.get("/balances/")
+@app.get("/balances/get/")
 def read_balances(ledger: str):
     check_ledger(ledger)
-    tr = ledgers[ledger]
-    return get_balances(tr, members[ledger])
+    return balances[ledger]
 
 
-@app.post("/transactions/add/")
-def add_transaction(ledger: str, transaction: Transaction):
-    check_ledger(ledger)
-    ledger_df = ledgers[ledger]
-    # validate transaction
-    for col in ledger_df.columns:
-        if col not in transaction:
-            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=f"Missing column {col}")
+import yaml
 
-    updated_ledger = (pd.concat([ledger_df, pd.DataFrame([transaction.dict()])])
-                      .sort_values('date', ascending=False))
-    ledgers[ledger] = updated_ledger
-    categories[ledger].add(transaction.category)
 
-    updated_ledger.to_json(f'{ledger}.json')
-    return status.HTTP_201_CREATED
+def nested_dict_print(d, indent=0):
+    print(yaml.dump(d, default_flow_style=False, indent=4))
+
+
+@app.post("/transaction/edit/")
+async def edit_transaction(transaction: Request):
+    transaction = await transaction.json()
+    id_ = transaction['id']
+    ledger_name = transaction['ledger']
+    del transaction['id']
+    del transaction['ledger']
+    # rename to -> for
+    transaction['for'] = transaction['to']
+    del transaction['to']
+    check_ledger(ledger_name)
+
+    if transaction['category'] not in categories[ledger_name]:
+        categories[ledger_name].add(transaction['category'])
+
+    # truncate split_values and split_weights to the length of members
+    transaction['for']['split_weights'] = transaction['for']['split_weights'][:len(transaction['for']['members'])]
+    transaction['by']['split_values'] = transaction['by']['split_values'][:len(transaction['by']['members'])]
+
+    # remove any none values from split_values and split_weights and the corresponding members
+    valid_ids = [i for i, x in enumerate(transaction['by']['split_values']) if x is not None and x > 0]
+    transaction['by']['members'] = [transaction['by']['members'][i] for i in valid_ids]
+    transaction['by']['split_values'] = [transaction['by']['split_values'][i] for i in valid_ids]
+
+    valid_ids = [i for i, x in enumerate(transaction['for']['split_weights']) if x is not None and x > 0]
+    transaction['for']['split_weights'] = [transaction['for']['split_weights'][i] for i in valid_ids]
+    transaction['for']['members'] = [transaction['for']['members'][i] for i in valid_ids]
+
+    # correct any possible inconsistency errors from the frontend
+    total = sum(float(x) for x in transaction['by']['split_values'] if x is not None)
+    if transaction['expense_type'] == 'income':
+        total = -abs(total)
+    transaction['by']['total'] = total
+
+    # compute total weight, and for.split_values
+    total_weight = sum(transaction['for']['split_weights'])
+    transaction['for']['split_values'] = [transaction['by']['total'] * w / total_weight for w in
+                                          transaction['for']['split_weights']]
+    transaction['for']['total'] = total_weight
+
+    if (curr := transaction['currency']) != 'CAD':
+        # use old exchange rate if provided
+        if 'exchange_rate' not in transaction:
+            transaction['exchange_rate'] = exchange_rates()[curr]
+        transaction['converted_total'] = round(transaction['by']['total'] * transaction['exchange_rate'], 2)
+    else:
+        transaction['exchange_rate'] = 1
+        transaction['converted_total'] = transaction['by']['total']
+
+    if 'recurring' not in transaction:
+        transaction['recurring'] = False
+
+    transaction['date'] = pd.to_datetime(transaction['date'].split('T')[0])
+    nested_dict_print(transaction)
+
+    ledger = ledgers[ledger_name]
+    if id_ == 'new':
+        # append new transaction to the ledger
+        if len(ledger) == 0:
+            ledger = pd.DataFrame([transaction])
+        else:
+            ledger = pd.concat([ledger, pd.DataFrame([transaction])])
+    else:
+        # update existing transaction
+        ledger.iloc[int(id_)] = transaction
+
+    # sort ledger by date
+    ledger = ledger.sort_values('date', ascending=False)
+    ledger.reset_index(drop=True, inplace=True)
+    ledger['id'] = ledger.index
+    ledgers[ledger_name] = ledger
+    balances[ledger_name] = get_balances(ledger, members[ledger_name])
+    settlements[ledger_name] = get_settlements(ledger, members[ledger_name])
+    ledger.to_json(f'ledgers/{ledger_name}.json', orient='records')
+    return status.HTTP_200_OK
 
 
 @app.post("/transactions/delete/")
@@ -174,19 +282,57 @@ def delete_member(ledger: str, member: str):
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail=f"Member {member} has non-zero balance")
     if member not in members[ledger]:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=f"Member {member} not found")
-    members[ledger].remove(member)
+    members[ledger].discard(member)
     json.dump(list(members[ledger]), open(f'members/{ledger}.json', 'w'))
     return status.HTTP_200_OK
+
+
+class Member(BaseModel):
+    member: str
+    ledger: str
 
 
 @app.post("/members/add/")
-def add_member(ledger: str, member: str):
-    check_ledger(ledger)
+def add_member(member: Member):
+    ledger = member.ledger
+    member = member.member
+
+    if ledger not in ledgers:
+        # initialize ledger
+        ledgers[ledger] = pd.DataFrame(columns=['by', 'currency', 'for', 'name',
+                                                'category', 'date', 'exchange_rate',
+                                                'converted_total', 'expense_type', 'id'])
+        ledgers[ledger].to_json(f'ledgers/{ledger}.json')
+        members[ledger] = set()
+        categories[ledger] = expense_categories
+        settlements[ledger] = []
+        balances[ledger] = {}
+
     if member in members[ledger]:
         raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Member already exists")
+
     members[ledger].add(member)
+    balances[ledger][member] = 0
     json.dump(list(members[ledger]), open(f'members/{ledger}.json', 'w'))
+    return status.HTTP_201_CREATED
+
+
+@app.delete("/ledger/delete/")
+def delete_ledger(ledger: str):
+    check_ledger(ledger)
+    os.remove(f'ledgers/{ledger}.json')
+    os.remove(f'members/{ledger}.json')
+    del ledgers[ledger]
+    del members[ledger]
+    del categories[ledger]
+    del settlements[ledger]
+    del balances[ledger]
     return status.HTTP_200_OK
+
+
+@app.get("/exchange_rate/")
+def get_exchange_rates():
+    return exchange_rates()
 
 
 if __name__ == "__main__":

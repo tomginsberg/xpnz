@@ -3,6 +3,7 @@ import DarkMode from "../components/DarkMode.vue";
 import { ref, onMounted, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { ProductService } from "../service/ProductService";
+import { XPNZService } from "../service/XPNZService.js";
 import VueInputCalculator from "vue-input-calculator";
 import { initFlowbite } from "flowbite";
 
@@ -10,26 +11,7 @@ import MultiSelect from "primevue/multiselect";
 import Calendar from "primevue/calendar";
 import Button from "primevue/button";
 import Dropdown from "primevue/dropdown";
-
-const expenseName = ref("");
-const router = useRouter();
-const route = useRoute();
-const ledgerID = ref("");
-const categories = ref([]);
-const members = ref([]);
-const recurringExpense = ref(false);
-const multiContribution = ref(false);
-const unequalSplitRef = ref(null);
-const recurringRef = ref(null);
-const product = ref({});
-const isNew = ref(false);
-const unequalSplit = ref(false);
-const contributions = ref([]);
-const deleteModal = ref(false);
-const byMembers = ref([]);
 import Dialog from "primevue/dialog";
-
-const date = ref(null);
 
 const flagEmoji = {
   CAD: "🇨🇦",
@@ -37,74 +19,184 @@ const flagEmoji = {
   EUR: "🇪🇺",
 };
 const currencies = ["CAD", "USD", "EUR"];
-const showDropdown = ref(false);
 
-function toggleDropdown() {
-  showDropdown.value = !showDropdown.value;
-}
+const router = useRouter();
+const route = useRoute();
+const ledgerID = route.params.ledgerId;
+const transactionID = route.params.productId;
 
-function selectCurrency(currency) {
-  product.value.currency = currency;
-  document.getElementById("dropdown-currency-button").click();
-}
+const categories = ref([]);
+const members = ref([]);
 
-const weights = ref([]);
+const placeholderName = ref("");
+const name = ref("");
+const category = ref("");
+const amount = ref(null);
+const currency = ref("CAD");
+const date = ref(new Date());
+
+const isIncome = ref(false);
+const unequalSplit = ref(false);
+const isRecurring = ref(false);
+const isNew = ref(false);
+const isTransfer = ref(false);
+const byMembers = ref([]);
+const multiContribution = ref(false);
+const expenseType = ref("Expense");
+
+const forMembers = ref([]);
+const byValues = ref([]);
+const forWeights = ref([]);
+const forValues = ref([]);
+
+const frequency = ref(null);
+const endDate = ref(null);
+
+const deleteModal = ref(false);
+
 onMounted(async () => {
   initFlowbite();
-  ledgerID.value = route.params.ledgerID;
-  expenseName.value = ProductService.getRandomExpenseName();
-  const productId = route.params.productId;
-  if (productId) {
-    const fetchedProduct = await ProductService.getProductById(productId);
-    if (productId === "new") {
-      isNew.value = true;
-    }
-    if (fetchedProduct) {
-      product.value = fetchedProduct; // Update the product with fetched data
+  if (transactionID === "new") {
+    isNew.value = true;
+    placeholderName.value = XPNZService.getRandomExpenseName();
+  } else if (transactionID) {
+    const transaction = await XPNZService.getTransactionById(
+      ledgerID,
+      transactionID,
+    );
+    if (transaction) {
+      name.value = transaction.name;
+      category.value = transaction.category;
+      isIncome.value = transaction.expense_type.toLowerCase() === "income";
+      if (isIncome.value && transaction.by.total < 0) {
+        amount.value = -transaction.by.total;
+      } else {
+        amount.value = transaction.by.total;
+      }
+
+      currency.value = transaction.currency;
+      date.value = new Date(transaction.date);
+
+      isTransfer.value = transaction.expense_type.toLowerCase() === "transfer";
+      isRecurring.value = transaction.recurring;
+      byMembers.value = transaction.by.members;
+      forMembers.value = transaction.for.members;
+      byValues.value = transaction.by.split_values;
+      forWeights.value = transaction.for.split_weights;
+      forValues.value = transaction.for.split_values;
+      multiContribution.value = transaction.by.members.length > 1;
       unequalSplit.value =
-        fetchedProduct.weights &&
-        fetchedProduct.weights.some(
-          (weight, index) => weight !== fetchedProduct.weights[0],
+        transaction.for["split_weights"] &&
+        transaction.for["split_weights"].some(
+          (weight, index) => weight !== transaction.for["split_weights"][0],
         );
-      multiContribution.value = fetchedProduct.by.length > 1;
-      contributions.value = fetchedProduct.contributions;
-      byMembers.value = fetchedProduct.by;
-      weights.value = fetchedProduct.weights;
-      date.value = fetchedProduct.date.toISOString().split("T")[0];
     } else {
-      console.error("Product not found");
-      // Handle product not found, e.g., redirect
+      await router.push(`/${ledgerID}`);
     }
-    categories.value = await ProductService.getCategories();
-    members.value = await ProductService.getMembers();
+  }
+
+  categories.value = await XPNZService.getCategories(ledgerID);
+  members.value = await XPNZService.getActiveMembers(ledgerID);
+  // add any members from forMembers and byMembers that are not in members
+  forMembers.value.forEach((member) => {
+    if (!members.value.includes(member)) {
+      members.value.push(member);
+    }
+  });
+  byMembers.value.forEach((member) => {
+    if (!members.value.includes(member)) {
+      members.value.push(member);
+    }
+  });
+});
+
+// make expense name computed property based on isIncome and isTransfer
+watch([isIncome, isTransfer], () => {
+  if (isIncome.value) {
+    expenseType.value = "Income";
+  } else if (isTransfer.value) {
+    expenseType.value = "Transfer";
+  } else {
+    expenseType.value = "Expense";
   }
 });
 
-function saveProduct() {
-  // Save product logic goes here
-  // update product.value.normalizedWeights
-  // normalizedWeights: item.weights.map(amount => totalAmount * amount.weight / totalWeight),
-  if (!unequalSplit.value) {
-    product.value.weights = product.value.for.map(() => 1);
+function selectCurrency(selectedCurrency) {
+  currency.value = selectedCurrency;
+  document.getElementById("dropdown-currency-button").click();
+}
+
+function saveExpense() {
+  // so some validation
+  if (name.value === "") {
+    alert("Please enter a name for the expense");
+    return;
   }
-  let totalWeight = product.value.weights.reduce(
-    (acc, weight) => acc + weight,
-    0,
-  );
-  product.value.normalizedWeights = product.value.for.map((member, index) => {
-    return (product.value.price * product.value.weights[index]) / totalWeight;
+  if (amount.value === null || amount.value === 0) {
+    alert("Please enter an amount for the expense");
+    return;
+  }
+  if (amount < 0) {
+    alert("Amount cannot be negative");
+    return;
+  }
+  if (byMembers.value.length === 0) {
+    alert("Please select at least one member who paid for the expense");
+    return;
+  }
+  if (forMembers.value.length === 0) {
+    alert("Please select at least one member to split the expense with");
+    return;
+  }
+  // check for negative values in byValues
+  if (byValues.value.some((value) => value < 0)) {
+    alert("Contribution amounts cannot be negative");
+    return;
+  }
+  // check for negative values in forWeights
+  if (forWeights.value.some((weight) => weight < 0)) {
+    alert("Split ratios cannot be negative");
+    return;
+  }
+  // check if the sum of forWeights is 0
+  if (sum(forWeights.value) === 0 && unequalSplit.value) {
+    alert("At least one split ratio must be greater than 0");
+    return;
+  }
+
+  XPNZService.editTransaction({
+    id: transactionID,
+    ledger: ledgerID,
+    name: name.value,
+    category: category.value,
+    by: {
+      members: byMembers.value,
+      split_values: byValues.value,
+      total: amount.value,
+    },
+    to: {
+      members: forMembers.value,
+      split_weights: unequalSplit.value
+        ? forWeights.value
+        : Array(forMembers.value.length).fill(1),
+    },
+    expense_type: expenseType.value.toLowerCase(),
+    currency: currency.value,
+    date: date.value.toISOString(),
+    recurring: isRecurring.value
+      ? { frequency: frequency.value, end_date: endDate.value }
+      : false,
   });
-  ProductService.saveProduct(product.value);
-  router.push(`/${route.params.ledgerId}`); // Navigate back to the product list page
+  router.push(`/${ledgerID}`); // Navigate back to the product list page
 }
 
 function cancelEdit() {
-  router.push(`/${route.params.ledgerId}`); // Navigate back without saving
+  router.push(`/${ledgerID}`); // Navigate back without saving
 }
 
 const itemToDelete = ref("");
 const deleteButtonDisabled = computed(() => {
-  return !(itemToDelete.value === product.value.name);
+  return !(itemToDelete.value === name.value);
 });
 
 function openDeleteModal() {
@@ -112,36 +204,75 @@ function openDeleteModal() {
   deleteModal.value = true;
 }
 
-function deleteProduct() {
+function deleteExpense() {
   deleteModal.value = false;
-  ProductService.deleteProduct(product.value.id);
+  XPNZService.deleteTransaction(ledgerID, transactionID);
   router.push(`/${route.params.ledgerId}`);
 }
 
-const totalContributions = computed(() => {
-  return contributions.value.reduce(
-    (total, contribution) => total + Number(contribution),
-    0,
-  );
+// watch byMembers
+watch(byMembers, () => {
+  multiContribution.value = byMembers.value.length > 1;
 });
 
-watch(multiContribution, (newValue) => {
-  if (newValue) {
-    // When multiContribution is enabled, set product.price to the sum of contributions
-    contributions.value = product.value.by.map(
-      () => product.value.price / product.value.by.length,
-    );
-    product.value.price = totalContributions.value;
-  } else {
-    contributions.value = product.value.by.map(
-      () => product.value.price / product.value.by.length,
-    );
+function sum(arr) {
+  return arr.reduce((acc, value) => acc + Number(value), 0);
+}
+
+// when byMembers has an item remove
+// find the index of the removed item and remove the corresponding value from byValues
+// and remove it as well and also subtract the value from the total amount
+watch(byMembers, (newVal, oldVal) => {
+  if (newVal.length === 0) {
+    byValues.value = [];
+  } else if (newVal.length < oldVal.length) {
+    const removedMember = oldVal.filter(
+      (member) => !newVal.includes(member),
+    )[0];
+    const removedIndex = oldVal.indexOf(removedMember);
+    byValues.value.splice(removedIndex, 1);
+  } else if (newVal.length > oldVal.length) {
+    for (let i = 0; i < newVal.length - oldVal.length; i++) {
+      byValues.value.push(null);
+    }
   }
+  amount.value = sum(byValues.value);
+});
+
+const totalContributions = computed(() => {
+  return sum(byValues.value);
+});
+
+const totalWeight = computed(() => {
+  return sum(forWeights.value);
 });
 
 watch(totalContributions, (newValue) => {
   if (multiContribution.value) {
-    product.value.price = newValue;
+    amount.value = newValue;
+  }
+});
+
+// watch amount when multiContribution is false and update byValues to be an array with a single value
+watch(amount, (newValue) => {
+  if (!multiContribution.value) {
+    byValues.value = [newValue];
+  }
+});
+
+watch(forMembers, (newVal, oldVal) => {
+  if (newVal.length === 0) {
+    forWeights.value = [];
+  } else if (newVal.length < oldVal.length) {
+    const removedMember = oldVal.filter(
+      (member) => !newVal.includes(member),
+    )[0];
+    const removedIndex = oldVal.indexOf(removedMember);
+    forWeights.value.splice(removedIndex, 1);
+  } else if (newVal.length > oldVal.length) {
+    for (let i = 0; i < newVal.length - oldVal.length; i++) {
+      forWeights.value.push(1);
+    }
   }
 });
 </script>
@@ -154,10 +285,10 @@ watch(totalContributions, (newValue) => {
       <h1
         class="flex-auto px-1 pt-1 text-lg font-semibold text-gray-800 dark:text-white"
       >
-        {{ product.id === "new" ? "📝" : "✏️" }}
+        {{ isNew ? "📝" : "✏️" }}
         ️<span class="px-1" />
-        {{ product.id === "new" ? "New" : "Edit" }}
-        {{ product.isIncome ? "Income" : "Expense" }}
+        {{ isNew ? "New" : "Edit" }}
+        {{ expenseType }}
       </h1>
       <div class="z-100">
         <DarkMode />
@@ -185,7 +316,7 @@ watch(totalContributions, (newValue) => {
 
       <div class="flex items-center justify-center">
         <button
-          @click="saveProduct"
+          @click="saveExpense"
           type="button"
           class="group inline-flex h-10 w-10 items-center justify-center rounded-xl bg-gray-300 font-medium shadow-lg hover:bg-blue-700 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-gray-800 dark:focus:ring-blue-800"
         >
@@ -216,9 +347,9 @@ watch(totalContributions, (newValue) => {
         <input
           type="text"
           id="name"
-          v-model="product.name"
+          v-model="name"
           class="block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
-          :placeholder="expenseName"
+          :placeholder="placeholderName"
           required
         />
       </div>
@@ -246,7 +377,7 @@ watch(totalContributions, (newValue) => {
           </svg>
         </div>
         <input
-          v-model="product.price"
+          v-model="amount"
           type="number"
           id="currency-input"
           class="z-20 block w-full rounded-s-lg border border-e-2 border-gray-300 border-e-gray-50 bg-gray-50 p-2.5 ps-10 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:border-e-gray-700 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500"
@@ -261,7 +392,7 @@ watch(totalContributions, (newValue) => {
         <div v-if="!multiContribution">
           <VueInputCalculator
             enableKeyboard
-            v-model="product.price"
+            v-model="amount"
             number-buttons-bg-color="#0f172a"
             action-buttons-bg-color="#1e293b"
             bg-color="#020617"
@@ -283,9 +414,9 @@ watch(totalContributions, (newValue) => {
         class="z-[6] inline-flex flex-shrink-0 items-center rounded-e-lg border border-gray-300 bg-gray-100 px-4 py-2.5 text-center text-sm font-medium text-gray-900 hover:bg-gray-200 focus:outline-none focus:ring-4 focus:ring-gray-100 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600 dark:focus:ring-gray-700"
         type="button"
       >
-        <span class="mr-2">{{ flagEmoji[product.currency] }}</span>
+        <span class="mr-2">{{ flagEmoji[currency] }}</span>
 
-        {{ product.currency }}
+        {{ currency }}
         <svg
           class="ms-2.5 h-2.5 w-2.5"
           aria-hidden="true"
@@ -310,15 +441,15 @@ watch(totalContributions, (newValue) => {
           class="py-2 text-sm text-gray-700 dark:text-gray-200"
           aria-labelledby="dropdown-currency-button"
         >
-          <li v-for="currency in currencies">
+          <li v-for="dropdownCurrency in currencies">
             <button
-              @click="selectCurrency(currency)"
+              @click="selectCurrency(dropdownCurrency)"
               type="button"
               class="inline-flex w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-600 dark:hover:text-white"
               role="menuitem"
             >
               <div class="inline-flex items-center">
-                {{ flagEmoji[currency] }} {{ currency }}
+                {{ flagEmoji[dropdownCurrency] }} {{ dropdownCurrency }}
               </div>
             </button>
           </li>
@@ -329,7 +460,7 @@ watch(totalContributions, (newValue) => {
     <div class="pt-5">
       <Dropdown
         editable
-        v-model="product.category"
+        v-model="category"
         :options="categories"
         dropdown
         placeholder="Select a Category"
@@ -339,7 +470,7 @@ watch(totalContributions, (newValue) => {
 
     <div class="max-w mt-5">
       <Calendar
-        v-model="product.date"
+        v-model="date"
         showIcon
         iconDisplay="input"
         touch-u-i
@@ -353,7 +484,9 @@ watch(totalContributions, (newValue) => {
           id="remember"
           type="checkbox"
           value=""
-          v-model="product.isIncome"
+          v-model="isIncome"
+          :disabled="isTransfer"
+          :class="{ 'cursor-not-allowed': isTransfer }"
           class="focus:ring-3 h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-800"
           required
         />
@@ -370,7 +503,8 @@ watch(totalContributions, (newValue) => {
           type="checkbox"
           value=""
           v-model="unequalSplit"
-          @click="unequalSplit = !unequalSplit"
+          :disabled="isTransfer"
+          :class="{ 'cursor-not-allowed': isTransfer }"
           class="focus:ring-3 h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-800"
           required
         />
@@ -386,7 +520,9 @@ watch(totalContributions, (newValue) => {
           id="remember"
           type="checkbox"
           value=""
-          v-model="recurringExpense"
+          v-model="isRecurring"
+          :disabled="isTransfer"
+          :class="{ 'cursor-not-allowed': isTransfer }"
           class="focus:ring-3 h-4 w-4 rounded border border-gray-300 bg-gray-50 focus:ring-blue-300 dark:border-gray-600 dark:bg-gray-700 dark:ring-offset-gray-800 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-800"
           required
         />
@@ -407,11 +543,11 @@ watch(totalContributions, (newValue) => {
 
       <MultiSelect
         id="membersby"
-        v-model="product.by"
+        v-model="byMembers"
         :options="members"
+        :disabled="isTransfer"
         display="chip"
         placeholder="Select Member(s)"
-        @change="multiContribution = product.by.length > 1"
       />
     </form>
 
@@ -424,11 +560,11 @@ watch(totalContributions, (newValue) => {
 
       <MultiSelect
         id="membersfor"
-        v-model="product.for"
+        v-model="forMembers"
+        :disabled="isTransfer"
         :options="members"
         display="chip"
         placeholder="Select Member(s)"
-        @change="multiContribution = product.by.length > 1"
       />
     </form>
 
@@ -440,7 +576,7 @@ watch(totalContributions, (newValue) => {
         Contribution Amounts
       </p>
       <div class="max-w justify-left flex flex-wrap pt-2">
-        <div v-for="(member, index) in product.by" class="flex-col px-1">
+        <div v-for="(member, index) in byMembers" class="flex-col px-1">
           <label
             for="email"
             class="justify-content-center mb-2 mt-2 block flex-1 content-center text-wrap px-2 text-sm font-medium text-gray-900 dark:text-white"
@@ -449,7 +585,7 @@ watch(totalContributions, (newValue) => {
           >
           <input
             type="number"
-            v-model="contributions[index]"
+            v-model="byValues[index]"
             id="email"
             class="block w-20 flex-1 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
             placeholder="Amount"
@@ -464,19 +600,19 @@ watch(totalContributions, (newValue) => {
       class="mt-5 rounded-lg border border-gray-300 px-2 py-3 dark:border-gray-600"
     >
       <p class="text-sm font-semibold text-gray-900 dark:text-white">
-        Split Weights
+        Split Ratios
       </p>
       <div class="max-w flex flex-wrap pt-2">
-        <div v-for="(member, index) in product.for" class="flex flex-col px-1">
+        <div v-for="(member, index) in forMembers" class="flex flex-col px-1">
           <label
             for="email"
             class="justify-content-center mb-2 mt-2 block flex-1 content-center px-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            {{ member }}</label
-          >
+            {{ member }}
+          </label>
           <input
             type="number"
-            v-model="product.weights[index]"
+            v-model="forWeights[index]"
             id="email"
             class="block w-20 flex-1 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
             placeholder="0"
@@ -489,7 +625,7 @@ watch(totalContributions, (newValue) => {
 
     <!-- Recurring Expense Options -->
     <div
-      v-if="recurringExpense"
+      v-if="isRecurring"
       class="mt-5 rounded-lg border border-gray-300 px-4 py-3 text-gray-900 dark:border-gray-600 dark:text-white"
     >
       <p class="mb-2 text-sm font-semibold">Recurring Expense</p>
@@ -499,7 +635,7 @@ watch(totalContributions, (newValue) => {
           <div class="col-span-2">
             <Dropdown
               id="frequency"
-              v-model="product.frequency"
+              v-model="frequency"
               :options="['Daily', 'Weekly', 'Monthly', 'Yearly']"
               class="w-full bg-gray-950"
               inputClass="text-white p-2 w-full"
@@ -510,14 +646,14 @@ watch(totalContributions, (newValue) => {
           <label for="end-date" class="pl-2 text-sm">End Date:</label>
           <div class="col-span-2 flex items-center">
             <Calendar
-              v-model="product.endDate"
+              v-model="endDate"
               placeholder="(Optional)"
               inputClass="p-2 w-full"
               id="end-date"
             />
             <button
               type="button"
-              @click="product.endDate = null"
+              @click="endDate = null"
               class="ml-2 rounded-lg bg-red-600 p-2 text-white transition duration-150 ease-in-out hover:bg-red-700"
             >
               Clear
@@ -579,7 +715,7 @@ watch(totalContributions, (newValue) => {
               <h3
                 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400"
               >
-                Type "<span class="font-semibold">{{ product.name }}</span
+                Type "<span class="font-semibold">{{ expense.name }}</span
                 >" to delete
               </h3>
 
@@ -616,7 +752,7 @@ watch(totalContributions, (newValue) => {
                 <button
                   type="submit"
                   v-if="!deleteButtonDisabled"
-                  @click="deleteProduct()"
+                  @click="deleteExpense()"
                   :class="{
                     'bg-red-600 hover:bg-red-700': !deleteButtonDisabled,
                     'bg-red-400': deleteButtonDisabled,
@@ -633,13 +769,3 @@ watch(totalContributions, (newValue) => {
     </Dialog>
   </div>
 </template>
-
-<style scoped>
-.dropdown-hidden {
-  display: none;
-}
-
-.dropdown-visible {
-  display: block;
-}
-</style>
