@@ -462,6 +462,7 @@ watch(forMembers, (newVal, oldVal) => {
         editable
         v-model="category"
         :options="categories"
+        filter
         dropdown
         placeholder="Select a Category"
         class="w-full"
