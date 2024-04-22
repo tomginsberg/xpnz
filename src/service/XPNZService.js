@@ -1,7 +1,7 @@
 // import axios
 import axios from "axios";
 
-const endpoint = "http://xpnzapi.titanium.ddns.me/";
+const endpoint = "https://xpnzapi.titanium.ddns.me/";
 
 const expenseNames = [
   "Coffee Break ☕",
