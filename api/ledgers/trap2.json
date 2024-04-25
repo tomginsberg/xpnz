@@ -1,36 +1,6 @@
 [
   {
     "currency": "CAD",
-    "name": "Settle Up Balance Transfer",
-    "category": "",
-    "date": "2024-01-03",
-    "exchange_rate": 1.0,
-    "converted_total": 32.73,
-    "expense_type": "expense",
-    "for": {
-      "members": [
-        "Dom"
-      ],
-      "split_values": [
-        32.73
-      ],
-      "split_weights": [
-        1
-      ],
-      "total": 1
-    },
-    "by": {
-      "members": [
-        "Tom"
-      ],
-      "split_values": [
-        32.73
-      ],
-      "total": 32.73
-    }
-  },
-  {
-    "currency": "CAD",
     "name": "December Gas",
     "category": "",
     "date": "2024-01-03",
@@ -120,7 +90,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         8.28
@@ -153,7 +123,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         5.09
@@ -186,7 +156,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         3.67
@@ -318,7 +288,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         2.99
@@ -351,7 +321,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         3.99
@@ -384,7 +354,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         7.0
@@ -417,7 +387,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         3.49
@@ -450,7 +420,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         3.0
@@ -582,7 +552,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         5.76
@@ -813,7 +783,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         11.27
@@ -843,7 +813,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         362.32
@@ -909,7 +879,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         14.03
@@ -939,7 +909,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         8.36
@@ -972,7 +942,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         21.47
@@ -1005,7 +975,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         7.0
@@ -1038,7 +1008,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         11.29
@@ -1071,7 +1041,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         2.99
@@ -1104,7 +1074,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         3.98
@@ -1362,7 +1332,7 @@
     },
     "by": {
       "members": [
-        "Tom"
+        "Dom"
       ],
       "split_values": [
         135.81
