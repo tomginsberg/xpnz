@@ -1,17 +1,29 @@
 import datetime
 import json
-import math
 import os
 from glob import glob
 
 import pandas as pd
+import requests
 from fastapi import FastAPI, HTTPException, Request
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from starlette import status
-from fastapi.middleware.cors import CORSMiddleware
 
 from settle import settle
-import requests
+import argparse
+
+# add a verbose flag to the command line arguments
+parser = argparse.ArgumentParser()
+parser.add_argument("-v", "--verbose", help="increase output verbosity",
+                    action="store_true")
+args = parser.parse_args()
+
+
+def vprint(message):
+    if args.verbose:
+        print(message)
+
 
 app = FastAPI()
 app.add_middleware(
@@ -27,7 +39,6 @@ CUTOFF = 0.1
 expense_categories = {
     "🛒 Groceries",
     "🍽️ Food",
-    "⛽ Gas",
     "💡 Utilities",
     "🏡 Household",
     "🏠 Rent",
@@ -41,6 +52,7 @@ expense_categories = {
     "📶 Internet",
     "🚿 Water",
     "🔥 Gas",
+    "🚡 Transportation",
     "⚡ Hydro",
     "❓Misc"
 }
@@ -192,7 +204,7 @@ def read_balances(ledger: str):
 @app.post("/transaction/edit/")
 async def edit_transaction(transaction: Request):
     transaction = await transaction.json()
-    print(transaction)
+    vprint(f'{transaction=}')
     id_ = transaction['id']
     ledger_name = transaction['ledger']
     del transaction['id']
@@ -203,19 +215,17 @@ async def edit_transaction(transaction: Request):
     check_ledger(ledger_name)
 
     is_income = transaction['expense_type'].lower() == 'income'
-    print(f'{is_income=}')
+    vprint(f'{is_income=}')
     income_multiplier = -1 if is_income else 1
-    print(f'{income_multiplier=}')
+    vprint(f'{income_multiplier=}')
 
     if transaction['category'] not in categories[ledger_name]:
         categories[ledger_name].add(transaction['category'])
 
     # truncate split_values and split_weights to the length of members
     transaction['for']['split_weights'] = transaction['for']['split_weights'][:len(transaction['for']['members'])]
-    print(f'{transaction["for"]["split_weights"]=}')
     transaction['by']['split_values'] = [
         abs(x) * income_multiplier for x in transaction['by']['split_values'][:len(transaction['by']['members'])]]
-    print(f'{transaction["by"]["split_values"]=}')
 
     # remove any none values from split_values and split_weights and the corresponding members
     valid_ids = [i for i, x in enumerate(transaction['by']['split_values']) if x is not None]
@@ -252,6 +262,7 @@ async def edit_transaction(transaction: Request):
         transaction['recurring'] = False
 
     transaction['date'] = pd.to_datetime(transaction['date'].split('T')[0])
+    vprint(f'Final transaction:\n {transaction}')
 
     ledger = ledgers[ledger_name]
     if id_ == 'new':
