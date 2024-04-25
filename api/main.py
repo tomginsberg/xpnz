@@ -192,6 +192,7 @@ def read_balances(ledger: str):
 @app.post("/transaction/edit/")
 async def edit_transaction(transaction: Request):
     transaction = await transaction.json()
+    print(transaction)
     id_ = transaction['id']
     ledger_name = transaction['ledger']
     del transaction['id']
@@ -201,7 +202,7 @@ async def edit_transaction(transaction: Request):
     del transaction['to']
     check_ledger(ledger_name)
 
-    is_income = transaction['expense_type'] == 'income'
+    is_income = transaction['expense_type'].lower() == 'income'
     income_multiplier = -1 if is_income else 1
 
     if transaction['category'] not in categories[ledger_name]:
