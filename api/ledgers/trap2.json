@@ -1,6 +1,36 @@
 [
   {
     "currency": "CAD",
+    "name": "Settle Up Balance Transfer",
+    "category": "",
+    "date": "2024-01-03",
+    "exchange_rate": 1.0,
+    "converted_total": 32.73,
+    "expense_type": "expense",
+    "for": {
+      "members": [
+        "Dom"
+      ],
+      "split_values": [
+        32.73
+      ],
+      "split_weights": [
+        1
+      ],
+      "total": 1
+    },
+    "by": {
+      "members": [
+        "Tom"
+      ],
+      "split_values": [
+        32.73
+      ],
+      "total": 32.73
+    }
+  },
+  {
+    "currency": "CAD",
     "name": "December Gas",
     "category": "",
     "date": "2024-01-03",
@@ -27,7 +57,7 @@
         "Tom"
       ],
       "split_values": [
-        4357
+        43.57
       ],
       "total": 43.57
     }
@@ -60,7 +90,7 @@
         "Tom"
       ],
       "split_values": [
-        3798
+        37.98
       ],
       "total": 37.98
     }
@@ -93,7 +123,7 @@
         "Tom"
       ],
       "split_values": [
-        828
+        8.28
       ],
       "total": 8.28
     }
@@ -126,7 +156,7 @@
         "Tom"
       ],
       "split_values": [
-        509
+        5.09
       ],
       "total": 5.09
     }
@@ -159,7 +189,7 @@
         "Tom"
       ],
       "split_values": [
-        367
+        3.67
       ],
       "total": 3.67
     }
@@ -192,7 +222,7 @@
         "Tom"
       ],
       "split_values": [
-        1807
+        18.07
       ],
       "total": 18.07
     }
@@ -225,7 +255,7 @@
         "Tom"
       ],
       "split_values": [
-        6779
+        67.79
       ],
       "total": 67.79
     }
@@ -258,7 +288,7 @@
         "Tom"
       ],
       "split_values": [
-        2381
+        23.81
       ],
       "total": 23.81
     }
@@ -291,7 +321,7 @@
         "Tom"
       ],
       "split_values": [
-        299
+        2.99
       ],
       "total": 2.99
     }
@@ -324,7 +354,7 @@
         "Tom"
       ],
       "split_values": [
-        399
+        3.99
       ],
       "total": 3.99
     }
@@ -357,7 +387,7 @@
         "Tom"
       ],
       "split_values": [
-        700
+        7.0
       ],
       "total": 7.0
     }
@@ -390,7 +420,7 @@
         "Tom"
       ],
       "split_values": [
-        349
+        3.49
       ],
       "total": 3.49
     }
@@ -423,7 +453,7 @@
         "Tom"
       ],
       "split_values": [
-        300
+        3.0
       ],
       "total": 3.0
     }
@@ -456,7 +486,7 @@
         "Tom"
       ],
       "split_values": [
-        1016
+        10.16
       ],
       "total": 10.16
     }
@@ -489,7 +519,7 @@
         "Tom"
       ],
       "split_values": [
-        2882
+        28.82
       ],
       "total": 28.82
     }
@@ -522,7 +552,7 @@
         "Tom"
       ],
       "split_values": [
-        5251
+        52.51
       ],
       "total": 52.51
     }
@@ -555,7 +585,7 @@
         "Tom"
       ],
       "split_values": [
-        576
+        5.76
       ],
       "total": 5.76
     }
@@ -588,7 +618,7 @@
         "Tom"
       ],
       "split_values": [
-        2460
+        24.6
       ],
       "total": 24.6
     }
@@ -621,7 +651,7 @@
         "Tom"
       ],
       "split_values": [
-        4062
+        40.62
       ],
       "total": 40.62
     }
@@ -654,7 +684,7 @@
         "Tom"
       ],
       "split_values": [
-        11398
+        113.98
       ],
       "total": 113.98
     }
@@ -687,7 +717,7 @@
         "Tom"
       ],
       "split_values": [
-        16000
+        160.0
       ],
       "total": 160.0
     }
@@ -720,7 +750,7 @@
         "Tom"
       ],
       "split_values": [
-        1550
+        15.5
       ],
       "total": 15.5
     }
@@ -753,7 +783,7 @@
         "Tom"
       ],
       "split_values": [
-        7215
+        72.15
       ],
       "total": 72.15
     }
@@ -786,7 +816,7 @@
         "Tom"
       ],
       "split_values": [
-        1127
+        11.27
       ],
       "total": 11.27
     }
@@ -816,7 +846,7 @@
         "Tom"
       ],
       "split_values": [
-        36232
+        362.32
       ],
       "total": 362.32
     }
@@ -849,7 +879,7 @@
         "Tom"
       ],
       "split_values": [
-        3141
+        31.41
       ],
       "total": 31.41
     }
@@ -882,7 +912,7 @@
         "Tom"
       ],
       "split_values": [
-        1403
+        14.03
       ],
       "total": 14.03
     }
@@ -912,7 +942,7 @@
         "Tom"
       ],
       "split_values": [
-        836
+        8.36
       ],
       "total": 8.36
     }
@@ -945,7 +975,7 @@
         "Tom"
       ],
       "split_values": [
-        2147
+        21.47
       ],
       "total": 21.47
     }
@@ -978,7 +1008,7 @@
         "Tom"
       ],
       "split_values": [
-        700
+        7.0
       ],
       "total": 7.0
     }
@@ -1011,7 +1041,7 @@
         "Tom"
       ],
       "split_values": [
-        1129
+        11.29
       ],
       "total": 11.29
     }
@@ -1044,7 +1074,7 @@
         "Tom"
       ],
       "split_values": [
-        299
+        2.99
       ],
       "total": 2.99
     }
@@ -1077,7 +1107,7 @@
         "Tom"
       ],
       "split_values": [
-        398
+        3.98
       ],
       "total": 3.98
     }
@@ -1107,7 +1137,7 @@
         "Tom"
       ],
       "split_values": [
-        1435
+        14.35
       ],
       "total": 14.35
     }
@@ -1137,7 +1167,7 @@
         "Tom"
       ],
       "split_values": [
-        1633
+        16.33
       ],
       "total": 16.33
     }
@@ -1170,7 +1200,7 @@
         "Tom"
       ],
       "split_values": [
-        2460
+        24.6
       ],
       "total": 24.6
     }
@@ -1203,7 +1233,7 @@
         "Tom"
       ],
       "split_values": [
-        4411
+        44.11
       ],
       "total": 44.11
     }
@@ -1236,7 +1266,7 @@
         "Tom"
       ],
       "split_values": [
-        2000
+        20.0
       ],
       "total": 20.0
     }
@@ -1269,7 +1299,7 @@
         "Tom"
       ],
       "split_values": [
-        4062
+        40.62
       ],
       "total": 40.62
     }
@@ -1302,7 +1332,7 @@
         "Tom"
       ],
       "split_values": [
-        2000
+        20.0
       ],
       "total": 20.0
     }
@@ -1335,7 +1365,7 @@
         "Tom"
       ],
       "split_values": [
-        13581
+        135.81
       ],
       "total": 135.81
     }
@@ -1368,7 +1398,7 @@
         "Tom"
       ],
       "split_values": [
-        5000
+        50.0
       ],
       "total": 50.0
     }
@@ -1401,7 +1431,7 @@
         "Tom"
       ],
       "split_values": [
-        2460
+        24.6
       ],
       "total": 24.6
     }
@@ -1434,7 +1464,7 @@
         "Tom"
       ],
       "split_values": [
-        8937
+        89.37
       ],
       "total": 89.37
     }
@@ -1467,7 +1497,7 @@
         "Tom"
       ],
       "split_values": [
-        4062
+        40.62
       ],
       "total": 40.62
     }
@@ -1500,7 +1530,7 @@
         "Tom"
       ],
       "split_values": [
-        6198
+        61.98
       ],
       "total": 61.98
     }
