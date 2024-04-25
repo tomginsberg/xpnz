@@ -81,9 +81,13 @@ onMounted(async () => {
       isRecurring.value = transaction.recurring;
       byMembers.value = transaction.by.members;
       forMembers.value = transaction.for.members;
-      byValues.value = transaction.by.split_values;
+      byValues.value = transaction.by.split_values.map((value) =>
+        Math.abs(value),
+      );
       forWeights.value = transaction.for.split_weights;
-      forValues.value = transaction.for.split_values;
+      forValues.value = transaction.for.split_values.map((value) =>
+        Math.abs(value),
+      );
       multiContribution.value = transaction.by.members.length > 1;
       unequalSplit.value =
         transaction.for["split_weights"] &&

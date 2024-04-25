@@ -201,17 +201,22 @@ async def edit_transaction(transaction: Request):
     del transaction['to']
     check_ledger(ledger_name)
 
+    is_income = transaction['expense_type'] == 'income'
+    income_multiplier = -1 if is_income else 1
+
     if transaction['category'] not in categories[ledger_name]:
         categories[ledger_name].add(transaction['category'])
 
     # truncate split_values and split_weights to the length of members
     transaction['for']['split_weights'] = transaction['for']['split_weights'][:len(transaction['for']['members'])]
-    transaction['by']['split_values'] = transaction['by']['split_values'][:len(transaction['by']['members'])]
+    transaction['by']['split_values'] = [
+        abs(x) * income_multiplier for x in transaction['by']['split_values'][:len(transaction['by']['members'])]]
 
     # remove any none values from split_values and split_weights and the corresponding members
     valid_ids = [i for i, x in enumerate(transaction['by']['split_values']) if x is not None and x > 0]
     transaction['by']['members'] = [transaction['by']['members'][i] for i in valid_ids]
-    transaction['by']['split_values'] = [transaction['by']['split_values'][i] for i in valid_ids]
+    transaction['by']['split_values'] = [income_multiplier * abs(transaction['by']['split_values'][i]) for i in
+                                         valid_ids]
 
     valid_ids = [i for i, x in enumerate(transaction['for']['split_weights']) if x is not None and x > 0]
     transaction['for']['split_weights'] = [transaction['for']['split_weights'][i] for i in valid_ids]
