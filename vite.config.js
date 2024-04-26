@@ -9,25 +9,25 @@ export default defineConfig({
     VitePWA({
       workbox: {
         // Runtime caching configuration
-        runtimeCaching: [
-          {
-            // Match any request that starts with your API endpoint
-            urlPattern: /^https:\/\/xpnzapi\.titanium\.ddns\.me\/.*/,
-            handler: "NetworkFirst", // Use the network first, but cache the response for future use
-            options: {
-              cacheName: "api-cache",
-              expiration: {
-                maxEntries: 50, // Maximum number of entries to cache
-                maxAgeSeconds: 60 * 60 * 24 * 7, // Cache for a week
-              },
-              cacheableResponse: {
-                statuses: [0, 200], // Cache responses with these HTTP status codes
-              },
-              networkTimeoutSeconds: 10, // Fallback to cache if the network does not respond within 10 seconds
-            },
-          },
-          // ...other runtime caching rules...
-        ],
+        // runtimeCaching: [
+        //   {
+        //     // Match any request that starts with your API endpoint
+        //     urlPattern: /^https:\/\/xpnzapi\.titanium\.ddns\.me\/.*/,
+        //     handler: "NetworkFirst", // Use the network first, but cache the response for future use
+        //     options: {
+        //       cacheName: "api-cache",
+        //       expiration: {
+        //         maxEntries: 50, // Maximum number of entries to cache
+        //         maxAgeSeconds: 60 * 60 * 24 * 7, // Cache for a week
+        //       },
+        //       cacheableResponse: {
+        //         statuses: [0, 200], // Cache responses with these HTTP status codes
+        //       },
+        //       networkTimeoutSeconds: 10, // Fallback to cache if the network does not respond within 10 seconds
+        //     },
+        //   },
+        //   // ...other runtime caching rules...
+        // ],
       },
       registerType: "autoUpdate",
       includeAssets: ["favicon.svg", "robots.txt"], // Include any other assets
