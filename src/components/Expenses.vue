@@ -1,6 +1,6 @@
 <template>
   <div class="pt-[7.25rem]" id="profile" role="tabpanel">
-    <div v-if="products.length === 0 && loaded">
+    <div v-if="expenses.length === 0 && loaded">
       <h2
         class="px-8 pt-64 text-center text-2xl font-bold text-gray-900 dark:text-white"
       >
@@ -31,6 +31,46 @@
         </button>
       </div>
     </div>
+
+    <div class="fixed right-12 top-4 z-50 p-2" @click="toggleExpansionOnAll">
+      <svg
+        v-show="!expansionToggle"
+        class="h-5 w-5 text-gray-600 dark:text-gray-400"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M8 4H4m0 0v4m0-4 5 5m7-5h4m0 0v4m0-4-5 5M8 20H4m0 0v-4m0 4 5-5m7 5h4m0 0v-4m0 4-5-5"
+        />
+      </svg>
+      <svg
+        v-show="expansionToggle"
+        class="h-5 w-5 text-gray-600 dark:text-gray-400"
+        aria-hidden="true"
+        xmlns="http://www.w3.org/2000/svg"
+        width="24"
+        height="24"
+        fill="none"
+        viewBox="0 0 24 24"
+      >
+        <path
+          stroke="currentColor"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M5 9h4m0 0V5m0 4L4 4m15 5h-4m0 0V5m0 4 5-5M5 15h4m0 0v4m0-4-5 5m15-5h-4m0 0v4m0-4 5 5"
+        />
+      </svg>
+    </div>
+
     <div
       class="my-3 grid w-full grid-flow-dense grid-cols-2 gap-3 px-3 pb-32 md:grid-cols-3 lg:grid-cols-5"
     >
@@ -59,8 +99,8 @@
             >
               {{
                 item.converted_total > 0
-                  ? "$" + item.converted_total
-                  : "+ $" + Math.abs(item.converted_total)
+                  ? "$" + roundToTwoDecimals(item.converted_total)
+                  : "+ $" + roundToTwoDecimals(Math.abs(item.converted_total))
               }}
             </p>
           </div>
@@ -118,7 +158,9 @@
               class="text-small mx-1 rounded-lg"
             >
               {{ member }} ({{ currencySymbols[item.currency]
-              }}{{ item.by["split_values"][index].toFixed(2) }})
+              }}{{
+                roundToTwoDecimals(Math.abs(item.by["split_values"][index]))
+              }})
             </span>
           </div>
           <div class="flex w-full flex-wrap">
@@ -129,7 +171,9 @@
               class="text-small mx-1 rounded-lg"
             >
               {{ member }} ({{ currencySymbols[item.currency]
-              }}{{ item.for["split_values"][index].toFixed(2) }})
+              }}{{
+                roundToTwoDecimals(Math.abs(item.for["split_values"][index]))
+              }})
             </span>
           </div>
         </div>
@@ -156,7 +200,7 @@ import { useRouter } from "vue-router";
 import Skeleton from "./Skeleton.vue";
 
 const router = useRouter();
-const products = ref([]);
+const expenses = ref([]);
 const expandedCard = ref([]);
 const cardRefs = reactive({});
 const route = useRoute();
@@ -165,11 +209,22 @@ const route = useRoute();
 const props = defineProps(["searchTerm"]);
 // Fuse.js setup
 const options = {
-  keys: ["name", "category", "date", "for", "by"],
+  keys: [
+    "name",
+    "category",
+    "date",
+    "for.members",
+    "by.members",
+    "expense_type",
+    "_for",
+    "_by",
+    "month",
+  ],
   includeScore: true,
   ignoreLocation: true,
-  threshold: 0.2, // Adjust for more/less strict matching
+  threshold: 0.1, // Adjust for more/less strict matching
   isCaseSensitive: false,
+  shouldSort: false,
 };
 
 const currencySymbols = {
@@ -181,14 +236,14 @@ const currencySymbols = {
 const loaded = ref(false);
 const fuse = ref(new Fuse([], options));
 
-watch(products, (newValue) => {
+watch(expenses, (newValue) => {
   fuse.value = new Fuse(newValue, options);
 });
 
 // Computed property for filtered products
 const filteredProducts = computed(() => {
   if (!props.searchTerm.trim()) {
-    return products.value;
+    return expenses.value;
   }
   return fuse.value.search(props.searchTerm).map((result) => result.item);
 });
@@ -198,7 +253,9 @@ function setCardRef(index) {
     if (el) cardRefs[index] = el; // Assign the DOM element to the reactive object
   };
 }
+
 const width = window.innerWidth;
+
 function isLong(item) {
   if (width < 500) {
     // check is name is not null and is longer than 20 characters
@@ -239,6 +296,13 @@ function toggleExpansion(index) {
   }
 }
 
+const expansionToggle = ref(false);
+
+function toggleExpansionOnAll() {
+  expansionToggle.value = !expansionToggle.value;
+  expandedCard.value = expandedCard.value.map(() => expansionToggle.value);
+}
+
 const editProduct = (prod) => {
   const scrollPosition = window.scrollY;
   localStorage.setItem("mainPageScrollPosition", scrollPosition.toString());
@@ -255,7 +319,12 @@ onMounted(async () => {
     await router.push(`/${ledgerID}/members`);
     return;
   }
-  products.value = data;
+  expenses.value = data;
+  expenses.value.forEach((item) => {
+    item["_for"] = item.for.members.map((mem) => `for-${mem}`);
+    item["_by"] = item.by.members.map((mem) => `by-${mem}`);
+    item["month"] = formatMonthYear(item.date);
+  });
 
   expandedCard.value = Array(data.length).fill(false);
   loaded.value = true;
@@ -267,6 +336,16 @@ onMounted(async () => {
     }
   });
 });
+
+function formatMonthYear(timestamp) {
+  const date = new Date(timestamp);
+  const options = { month: "long", year: "numeric" };
+  return date.toLocaleDateString("en-US", options);
+}
+
+function roundToTwoDecimals(num) {
+  return Math.round(num * 100) / 100;
+}
 
 const newExpense = () => {
   router.push(`/${route.params.ledgerId}/edit/new`);

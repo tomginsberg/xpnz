@@ -133,7 +133,7 @@ function selectCurrency(selectedCurrency) {
 function saveExpense() {
   // so some validation
   if (name.value === "" && category.value === "") {
-    alert(`Please enter a name or a category for the ${expenseType}`);
+    alert(`Please enter a name or a category for the ${expenseType.value}`);
     return;
   }
   if (amount.value === null || amount.value === 0) {
@@ -167,6 +167,15 @@ function saveExpense() {
     alert("At least one split ratio must be greater than 0");
     return;
   }
+  console.log(
+    "Saving expense",
+    name.value,
+    amount.value,
+    currency.value,
+    " for  date",
+    date.value,
+    date.value.getUTCDate(),
+  );
 
   XPNZService.editTransaction({
     id: transactionID,
@@ -204,12 +213,18 @@ const deleteButtonDisabled = computed(() => {
 });
 
 function openDeleteModal() {
+  if (isNew.value) {
+    router.push(`/${ledgerID}`);
+    return;
+  }
+  console.log("Opening delete modal");
   itemToDelete.value = "";
   deleteModal.value = true;
 }
 
 function deleteExpense() {
   deleteModal.value = false;
+  console.log("Deleting expense", name.value, transactionID);
   XPNZService.deleteTransaction(ledgerID, transactionID);
   router.push(`/${route.params.ledgerId}`);
 }
@@ -245,10 +260,6 @@ watch(byMembers, (newVal, oldVal) => {
 
 const totalContributions = computed(() => {
   return sum(byValues.value);
-});
-
-const totalWeight = computed(() => {
-  return sum(forWeights.value);
 });
 
 watch(totalContributions, (newValue) => {
@@ -720,7 +731,7 @@ watch(forMembers, (newVal, oldVal) => {
               <h3
                 class="mb-5 text-lg font-normal text-gray-500 dark:text-gray-400"
               >
-                Type "<span class="font-semibold">{{ expense.name }}</span
+                Type "<span class="font-semibold">{{ name }}</span
                 >" to delete
               </h3>
 

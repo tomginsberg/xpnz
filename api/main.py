@@ -134,7 +134,10 @@ categories: dict[str, set[str]] = {}
 members: dict[str, set[str]] = {}
 settlements: dict[str, list[tuple[str, str, float]]] = {}
 for file in glob('ledgers/*.json'):
-    ledgers[ledger_id := os.path.basename(file).removesuffix('.json')] = (pd.read_json(file)
+    df = pd.read_json(file)
+    # convert date col to tz aware datetime with default EST
+    df['date'] = pd.to_datetime(df['date'], errors='coerce', utc=True)
+    ledgers[ledger_id := os.path.basename(file).removesuffix('.json')] = (df
                                                                           .sort_values('date', ascending=False))
     ledgers[ledger_id].reset_index(drop=True, inplace=True)
     ledgers[ledger_id]['id'] = ledgers[ledger_id].index
@@ -169,7 +172,6 @@ class TransactionID(BaseModel):
 def get_transaction(ledger: str, transaction_id: int) -> list[dict]:
     check_ledger(ledger)
     ledger = ledgers[ledger]
-    assert ledger.iloc[transaction_id].id == transaction_id
     return [ledger.iloc[transaction_id].to_dict()]
 
 
@@ -201,6 +203,13 @@ def read_balances(ledger: str):
     return balances[ledger]
 
 
+def parse_float(x):
+    try:
+        return float(x)
+    except:
+        return x
+
+
 @app.post("/transaction/edit/")
 async def edit_transaction(transaction: Request):
     transaction = await transaction.json()
@@ -225,7 +234,7 @@ async def edit_transaction(transaction: Request):
     # truncate split_values and split_weights to the length of members
     transaction['for']['split_weights'] = transaction['for']['split_weights'][:len(transaction['for']['members'])]
     transaction['by']['split_values'] = [
-        abs(x) * income_multiplier for x in transaction['by']['split_values'][:len(transaction['by']['members'])]]
+        abs(parse_float(x)) * income_multiplier for x in transaction['by']['split_values'][:len(transaction['by']['members'])]]
 
     # remove any none values from split_values and split_weights and the corresponding members
     valid_ids = [i for i, x in enumerate(transaction['by']['split_values']) if x is not None]
@@ -261,7 +270,8 @@ async def edit_transaction(transaction: Request):
     if 'recurring' not in transaction:
         transaction['recurring'] = False
 
-    transaction['date'] = pd.to_datetime(transaction['date'].split('T')[0])
+    transaction['date'] = pd.to_datetime(transaction['date'])
+    print(transaction['date'])
     vprint(f'Final transaction:\n {transaction}')
 
     ledger = ledgers[ledger_name]
@@ -309,7 +319,7 @@ async def settle_debt(data: Request):
         'name': f'{data["from"]} → {data["to"]}',
         'category': '💸 Transfer',
         'currency': 'CAD',
-        'date': pd.to_datetime(datetime.date.today()),
+        'date': pd.to_datetime(datetime.datetime.now(), utc=True),
         'recurring': False,
         'expense_type': 'transfer',
         'converted_total': amount,
@@ -326,12 +336,24 @@ async def settle_debt(data: Request):
     return status.HTTP_200_OK
 
 
+class DeleteTransaction(BaseModel):
+    transaction_id: int
+    ledger: str
+
+
 @app.post("/transactions/delete/")
-def delete_transaction(ledger: str, transaction_id: int):
-    check_ledger(ledger)
-    ledger = ledgers[ledger]
+def delete_transaction(transaction: DeleteTransaction):
+    ledger_name = transaction.ledger
+    transaction_id = transaction.transaction_id
+    check_ledger(ledger_name)
+    ledger = ledgers[ledger_name]
+    print(f'Deleting transaction {transaction_id} ({ledger.iloc[transaction_id]}) from {ledger_name}')
+    # drop index transaction_id from ledger
     updated_ledger = ledger.drop(transaction_id)
-    updated_ledger.to_json(f'{ledger}.json')
+    updated_ledger.reset_index(drop=True, inplace=True)
+    updated_ledger['id'] = updated_ledger.index
+    updated_ledger.to_json(f'ledgers/{ledger_name}.json')
+    ledgers[ledger_name] = updated_ledger
     return status.HTTP_200_OK
 
 
