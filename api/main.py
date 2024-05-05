@@ -352,7 +352,7 @@ def delete_transaction(transaction: DeleteTransaction):
     updated_ledger = ledger.drop(transaction_id)
     updated_ledger.reset_index(drop=True, inplace=True)
     updated_ledger['id'] = updated_ledger.index
-    updated_ledger.to_json(f'ledgers/{ledger_name}.json')
+    updated_ledger.to_json(f'ledgers/{ledger_name}.json', orient='records')
     ledgers[ledger_name] = updated_ledger
     return status.HTTP_200_OK
 

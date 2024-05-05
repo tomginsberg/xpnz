@@ -2,6 +2,7 @@
 import axios from "axios";
 
 const endpoint = "https://xpnzapi.titanium.ddns.me/";
+// const endpoint = "http://orion:8000/";
 
 const expenseNames = [
   "Coffee Break ☕",
@@ -229,9 +230,9 @@ export const XPNZService = {
   deleteTransaction(ledgerId, transactionId) {
     // post to endpoint /transactions with key ledgerId
     return axios
-      .post(endpoint + "transactions", {
-        ledger_id: ledgerId,
-        transactionId: transactionId,
+      .post(endpoint + "transactions/delete/", {
+        ledger: ledgerId,
+        transaction_id: transactionId,
       })
       .then((response) => {
         return response.data;
