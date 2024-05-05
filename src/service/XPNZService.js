@@ -230,9 +230,11 @@ export const XPNZService = {
   deleteTransaction(ledgerId, transactionId) {
     // post to endpoint /transactions with key ledgerId
     return axios
-      .post(endpoint + "transactions/delete/", {
-        ledger: ledgerId,
-        transaction_id: transactionId,
+      .delete(endpoint + "transaction/delete/", {
+        params: {
+          ledger: ledgerId,
+          transaction_id: transactionId,
+        },
       })
       .then((response) => {
         return response.data;

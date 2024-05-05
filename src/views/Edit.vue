@@ -226,7 +226,7 @@ function deleteExpense() {
   deleteModal.value = false;
   console.log("Deleting expense", name.value, transactionID);
   XPNZService.deleteTransaction(ledgerID, transactionID);
-  router.push(`/${route.params.ledgerId}`);
+  router.push(`/${ledgerID}`);
 }
 
 // watch byMembers

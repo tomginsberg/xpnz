@@ -341,10 +341,11 @@ class DeleteTransaction(BaseModel):
     ledger: str
 
 
-@app.post("/transactions/delete/")
-def delete_transaction(transaction: DeleteTransaction):
-    ledger_name = transaction.ledger
-    transaction_id = transaction.transaction_id
+@app.delete("/transaction/delete/")
+def delete_transaction(ledger: str, transaction_id: int):
+    ledger_name = ledger
+    transaction_id = transaction_id
+    print(f'Deleting transaction {transaction_id} from {ledger_name}')
     check_ledger(ledger_name)
     ledger = ledgers[ledger_name]
     print(f'Deleting transaction {transaction_id} ({ledger.iloc[transaction_id]}) from {ledger_name}')
