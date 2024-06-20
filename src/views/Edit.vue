@@ -607,7 +607,6 @@ watch(forMembers, (newVal, oldVal) => {
       <div class="max-w justify-left flex flex-wrap pt-2">
         <div v-for="(member, index) in byMembers" class="flex-col px-1">
           <label
-            for="email"
             class="justify-content-center mb-2 mt-2 block flex-1 content-center text-wrap px-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             {{ member }}</label
@@ -615,7 +614,6 @@ watch(forMembers, (newVal, oldVal) => {
           <input
             type="number"
             v-model="byValues[index]"
-            id="email"
             class="block w-20 flex-1 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
             placeholder="Amount"
             required
@@ -634,7 +632,6 @@ watch(forMembers, (newVal, oldVal) => {
       <div class="max-w flex flex-wrap pt-2">
         <div v-for="(member, index) in forMembers" class="flex flex-col px-1">
           <label
-            for="email"
             class="justify-content-center mb-2 mt-2 block flex-1 content-center px-2 text-sm font-medium text-gray-900 dark:text-white"
           >
             {{ member }}
@@ -642,7 +639,6 @@ watch(forMembers, (newVal, oldVal) => {
           <input
             type="number"
             v-model="forWeights[index]"
-            id="email"
             class="block w-20 flex-1 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
             placeholder="0"
             required
