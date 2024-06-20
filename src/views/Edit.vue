@@ -2,7 +2,6 @@
 import DarkMode from "../components/DarkMode.vue";
 import { ref, onMounted, computed, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
-import { ProductService } from "../service/ProductService";
 import { XPNZService } from "../service/XPNZService.js";
 import VueInputCalculator from "vue-input-calculator";
 import { initFlowbite } from "flowbite";

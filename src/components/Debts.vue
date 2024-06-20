@@ -129,7 +129,6 @@
 <script setup>
 import { onMounted, ref } from "vue";
 import Dialog from "primevue/dialog";
-import { ProductService } from "../service/ProductService.js";
 import { initFlowbite } from "flowbite";
 import { useRoute } from "vue-router";
 import { XPNZService } from "../service/XPNZService.js";

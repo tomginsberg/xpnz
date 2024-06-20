@@ -193,7 +193,6 @@ import {
   defineProps,
 } from "vue";
 import { useRoute } from "vue-router";
-import { ProductService } from "../service/ProductService.js";
 import { XPNZService } from "../service/XPNZService.js";
 import Fuse from "fuse.js";
 import { useRouter } from "vue-router";
