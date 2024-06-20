@@ -10,7 +10,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from starlette import status
 
-from settle import settle
+from api.settle import settle
 import argparse
 
 # add a verbose flag to the command line arguments
