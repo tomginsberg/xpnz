@@ -244,17 +244,31 @@ watch(byMembers, (newVal, oldVal) => {
   if (newVal.length === 0) {
     byValues.value = [];
   } else if (newVal.length < oldVal.length) {
-    const removedMember = oldVal.filter(
-      (member) => !newVal.includes(member),
-    )[0];
-    const removedIndex = oldVal.indexOf(removedMember);
-    byValues.value.splice(removedIndex, 1);
-  } else if (newVal.length > oldVal.length) {
-    for (let i = 0; i < newVal.length - oldVal.length; i++) {
-      byValues.value.push(null);
+    if (newVal.length === 1) {
+      byValues.value = [sum(byValues.value)];
     }
+    else {
+      const removedMember = oldVal.filter(
+        (member) => !newVal.includes(member),
+      )[0];
+      const removedIndex = oldVal.indexOf(removedMember);
+      byValues.value.splice(removedIndex, 1);
+    }
+    amount.value = sum(byValues.value);
+  } else if (newVal.length > oldVal.length) {
+    if (oldVal.length === 0) {
+      byValues.value = [amount.value];
+      for (let i = 1; i < newVal.length - oldVal.length; i++) {
+        byValues.value.push(null);
+      }
+    }
+    else {
+      for (let i = 0; i < newVal.length - oldVal.length; i++) {
+        byValues.value.push(null);
+      }
+    }
+    amount.value = sum(byValues.value);
   }
-  amount.value = sum(byValues.value);
 });
 
 const totalContributions = computed(() => {
