@@ -30,9 +30,6 @@ export default {
       { "rounded-md": !props.showIcon || props.iconDisplay == "input" },
       { "rounded-l-md  flex-1 pr-9": props.showIcon && props.iconDisplay !== "input" },
       { "rounded-md flex-1 pr-9": props.showIcon && props.iconDisplay === "input" },
-      // Transitions
-      "transition-colors",
-      "duration-200",
       // States
       { "hover:border-primary-500 dark:hover:border-primary-400": !props.invalid },
       "focus:outline-none focus:outline-offset-0 focus:ring focus:ring-primary-500/50 dark:focus:ring-primary-400/50"

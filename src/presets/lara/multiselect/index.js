@@ -16,9 +16,6 @@ export default {
                 { 'border-surface-300 dark:border-surface-600': !props.invalid },
                 // Invalid State
                 { 'border-red-500 dark:border-red-400': props.invalid },
-                // Transitions
-                'transition-all',
-                'duration-200',
                 // States
                 { 'hover:border-primary-500 dark:hover:border-primary-300': !props.invalid },
                 { 'outline-none outline-offset-0 ring ring-primary-400/50 dark:ring-primary-300/50': state.focused },
@@ -46,8 +43,6 @@ export default {
                     // Color
                     { 'text-surface-800 dark:text-white/80': (_c = props.modelValue) == null ? void 0 : _c.length, 'text-gray-500 dark:text-gray-400': !((_d = props.modelValue) != null && _d.length) },
                     'placeholder:text-surface-400 dark:placeholder:text-surface-500',
-                    // Transitions
-                    'transition duration-200',
                     // Misc
                     'overflow-hidden whitespace-nowrap cursor-pointer overflow-ellipsis'
                 ]
@@ -57,7 +52,7 @@ export default {
             class: ['inline-flex items-center', 'py-1.5 px-3 mr-2', 'rounded-[1.14rem]', 'bg-surface-200 dark:bg-gray-600', 'text-surface-700 dark:text-white/70', 'cursor-default']
         },
         removeTokenIcon: {
-            class: ['rounded-md leading-6', 'ml-2', 'w-4 h-4', 'transition duration-200 ease-in-out', 'cursor-pointer']
+            class: ['rounded-md leading-6', 'ml-2', 'w-4 h-4', 'cursor-pointer']
         },
         trigger: {
             class: ['flex items-center justify-center', 'shrink-0', 'bg-transparent', 'text-surface-500', 'w-12', 'rounded-tr-md', 'rounded-br-md']
