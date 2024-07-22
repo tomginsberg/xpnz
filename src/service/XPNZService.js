@@ -94,6 +94,8 @@ export const XPNZService = {
     //   }
     // }
     // results should be sorted by date
+    // convert ledgerId to lowercase
+    ledgerId = ledgerId.toLowerCase();
     return new Promise((resolve, reject) => {
       axios
         .get(endpoint + `ledger/get/`, {
@@ -114,6 +116,7 @@ export const XPNZService = {
     return getRandomExpenseName();
   },
   getTransactionById(ledgerId, transactionId) {
+    ledgerId = ledgerId.toLowerCase();
     return new Promise((resolve, reject) => {
       axios
         .get(endpoint + `transaction/get/`, {
@@ -132,6 +135,7 @@ export const XPNZService = {
     });
   },
   getActiveMembers(ledgerId) {
+    ledgerId = ledgerId.toLowerCase();
     // get from endpoint /members with key ledgerId
     // [flat list of names (string)]
     return new Promise((resolve, reject) => {
@@ -150,6 +154,7 @@ export const XPNZService = {
     });
   },
   getAllMembers(ledgerId) {
+    ledgerId = ledgerId.toLowerCase();
     return axios
       .get(endpoint + "members", {
         params: {
@@ -161,6 +166,7 @@ export const XPNZService = {
       });
   },
   getBalances(ledgerId) {
+    ledgerId = ledgerId.toLowerCase();
     // get from endpoint /balances with key ledgerId
     // {
     //   memberName: balance (int or float)
@@ -181,6 +187,7 @@ export const XPNZService = {
     });
   },
   getDebts(ledgerId) {
+    ledgerId = ledgerId.toLowerCase();
     return new Promise((resolve, reject) => {
       axios
         .get(endpoint + `settlements/get/`, {
@@ -197,6 +204,7 @@ export const XPNZService = {
     });
   },
   getCategories(ledgerId) {
+    ledgerId = ledgerId.toLowerCase();
     // get from endpoint /categories with key ledgerId
     return axios
       .get(endpoint + "categories/get/", {
@@ -228,6 +236,7 @@ export const XPNZService = {
       });
   },
   deleteTransaction(ledgerId, transactionId) {
+    ledgerId = ledgerId.toLowerCase();
     // post to endpoint /transactions with key ledgerId
     return axios
       .delete(endpoint + "transaction/delete/", {
@@ -241,6 +250,7 @@ export const XPNZService = {
       });
   },
   addMember(ledgerId, member) {
+    ledgerId = ledgerId.toLowerCase();
     // post to endpoint /members with key ledgerId
     return new Promise((resolve, reject) => {
       axios
@@ -258,6 +268,7 @@ export const XPNZService = {
     });
   },
   archiveMember(ledgerId, member) {
+    ledgerId = ledgerId.toLowerCase();
     // post to endpoint /members with key ledgerId
     return axios
       .post(endpoint + "members", {
