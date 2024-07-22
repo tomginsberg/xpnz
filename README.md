@@ -1,8 +1,14 @@
 # 💸 xpnz
 
-A sleek, modern, free & self-hosted group expense tracking app.
+A sleek, modern,
+ree & self-hosted group expense tracking app.
 
-## Installation & Deployment
+Try it [here!](https://xpnz.titanium.ddns.me/)
+
+![xpnz](https://hackmd.io/_uploads/S1fT9H3uC.png)
+
+
+## Self Host - Installation & Deployment
 
 ### 1. Install the Source Code and Project Requirements
 
