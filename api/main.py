@@ -133,6 +133,7 @@ def get_settlements(tr, members=None):
     return [(a, b, x) for a, b, c in s if abs(x := round(c, 2)) >= CUTOFF]
 
 
+print(glob('*'))
 balances: dict[str, dict[str, float]] = {}
 ledgers: dict[str, pd.DataFrame] = {}
 categories: dict[str, set[str]] = {}
@@ -350,7 +351,6 @@ class DeleteTransaction(BaseModel):
 @app.delete("/transaction/delete/")
 def delete_transaction(ledger: str, transaction_id: int):
     ledger_name = ledger
-    transaction_id = transaction_id
     print(f'Deleting transaction {transaction_id} from {ledger_name}')
     check_ledger(ledger_name)
     ledger = ledgers[ledger_name]
@@ -360,7 +360,11 @@ def delete_transaction(ledger: str, transaction_id: int):
     updated_ledger.reset_index(drop=True, inplace=True)
     updated_ledger['id'] = updated_ledger.index
     updated_ledger.to_json(f'ledgers/{ledger_name}.json', orient='records')
+
     ledgers[ledger_name] = updated_ledger
+    balances[ledger_name] = get_balances(updated_ledger, members[ledger_name])
+    settlements[ledger_name] = get_settlements(updated_ledger, members[ledger_name])
+
     return status.HTTP_200_OK
 
 
