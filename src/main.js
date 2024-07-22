@@ -7,6 +7,7 @@ import "primeicons/primeicons.css";
 import Dropdown from 'primevue/dropdown';
 import Panel from "primevue/panel";
 import Lara from "./presets/lara";
+import VueApexCharts from "vue3-apexcharts";
 // import "primevue/resources/themes/aura-dark-indigo/theme.css";
 
 const app = createApp(App);
@@ -15,6 +16,7 @@ const app = createApp(App);
 app.component("Panel", Panel);
 
 app.use(router);
+app.use(VueApexCharts);
 app.use(PrimeVue, {
   unstyled: true,
   pt: Lara

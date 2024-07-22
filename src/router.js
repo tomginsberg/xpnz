@@ -4,6 +4,7 @@ import Expenses from "./views/Expenses.vue";
 import Members from "./views/Members.vue";
 import Debts from "./views/Debts.vue";
 import Home from "./views/Home.vue";
+import Plot from "./views/Plot.vue";
 
 export const router = createRouter({
   history: createWebHistory(),
@@ -13,6 +14,7 @@ export const router = createRouter({
     { path: "/:ledgerId", component: Expenses },
     { path: "/:ledgerId/members", component: Members },
     { path: "/:ledgerId/debts", component: Debts },
+    { path: "/:ledgerId/plot", component: Plot },
   ],
   scrollBehavior(to, from, savedPosition) {
     if (savedPosition) {
