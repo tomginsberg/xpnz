@@ -196,7 +196,6 @@ import { useRoute } from "vue-router";
 import { XPNZService } from "../service/XPNZService.js";
 import Fuse from "fuse.js";
 import { useRouter } from "vue-router";
-import Skeleton from "./Skeleton.vue";
 
 const router = useRouter();
 const expenses = ref([]);
