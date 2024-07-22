@@ -58,9 +58,14 @@ expense_categories = {
 }
 
 
-def exchange_rates(currencies: tuple[str] = ('USD', 'EUR')):
+def exchange_rates(currencies: tuple[str] = ('USD', 'EUR', 'PLN')):
     r = requests.get('https://open.er-api.com/v6/latest/CAD').json()
     return {c: 1 / r['rates'][c] for c in currencies}
+
+
+def exchange_rate(currency: str):
+    r = requests.get('https://open.er-api.com/v6/latest/CAD').json()
+    return 1 / r['rates'][currency]
 
 
 class TransactionFor(BaseModel):
@@ -234,7 +239,8 @@ async def edit_transaction(transaction: Request):
     # truncate split_values and split_weights to the length of members
     transaction['for']['split_weights'] = transaction['for']['split_weights'][:len(transaction['for']['members'])]
     transaction['by']['split_values'] = [
-        abs(parse_float(x)) * income_multiplier for x in transaction['by']['split_values'][:len(transaction['by']['members'])]]
+        abs(parse_float(x)) * income_multiplier for x in
+        transaction['by']['split_values'][:len(transaction['by']['members'])]]
 
     # remove any none values from split_values and split_weights and the corresponding members
     valid_ids = [i for i, x in enumerate(transaction['by']['split_values']) if x is not None]
