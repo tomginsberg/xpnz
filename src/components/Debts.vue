@@ -47,16 +47,21 @@
         </div>
       </div>
     </div>
+
+
     <!-- Copy debts to clipboard button -->
     <div class="flex w-8">
-      <button v-if="loaded"
-          @click="copyDebts()"
-              class="rounded-lg bg-gray-200 p-3 shadow-lg hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-gray-700 dark:text-white dark:hover:bg-blue-600"
-      >
-        <svg class="w-5 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
+      <button v-if="loaded" @click="copyDebts"
+              :class="buttonClass"
+              class="rounded-lg p-3 shadow-lg dark:text-white">
+        <svg v-if="!animationComplete" class="w-5 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
              width="24" height="24" fill="currentColor" viewBox="0 0 24 24">
           <path
               d="M17.5 3a3.5 3.5 0 0 0-3.456 4.06L8.143 9.704a3.5 3.5 0 1 0-.01 4.6l5.91 2.65a3.5 3.5 0 1 0 .863-1.805l-5.94-2.662a3.53 3.53 0 0 0 .002-.961l5.948-2.667A3.5 3.5 0 1 0 17.5 3Z"/>
+        </svg>
+        <svg v-if="animationComplete" class="w-5 h-6" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+             fill="none">
+  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m0 3h6m-6 7 2 2 4-4m-5-9v4h4V3h-4Z"/>
         </svg>
       </button>
     </div>
@@ -185,23 +190,57 @@ function settleDebt(memberFrom, memberTo, amount) {
   });
 }
 
-async function copyDebts() {
+
+const copied = ref(false);
+const animationComplete = ref(false);
+const buttonClass = ref('bg-gray-200 hover:bg-blue-500 dark:bg-gray-700 dark:hover:bg-blue-600');
+const copyDebts = async () => {
   let text = debts.value
       .map((debt) => `${debt[0]} → ${debt[1]}: $${debt[2]}`)
       .join("\n");
   console.log(text);
-  // add workspcae url to the text
+
+  // Add workspace URL to the text
   text = `📊 Debts\n\n${text}\n\nsee expenses @ https://xpnz.titanium.ddns.me/${ledgerID}`;
-  if (navigator.share){
-    await navigator.share({
-      text: text
-    });
-  }
-  else if(navigator.clipboard){
+
+  if (navigator.share) {
+    await navigator.share({text: text});
+  } else if (navigator.clipboard) {
     await navigator.clipboard.writeText(text);
-  }
-  else {
+  } else {
     alert(text);
   }
-}
+
+  // Trigger the animation and checkmark
+  copied.value = true;
+  buttonClass.value = 'animate-button-transition bg-green-500';
+  setTimeout(() => {
+    animationComplete.value = true;
+  }, 500); // Adjust the timeout to match the CSS animation duration
+  // change it back after 500ms
+  setTimeout(() => {
+    copied.value = false;
+    animationComplete.value = false;
+    buttonClass.value = 'bg-gray-200 hover:bg-blue-500 dark:bg-gray-700 dark:hover:bg-blue-600';
+  }, 1500);
+};
 </script>
+
+<style scoped>
+@keyframes buttonTransition {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-button-transition {
+  animation: buttonTransition 1s forwards;
+  transition: background-color 0.5s;
+}
+</style>
