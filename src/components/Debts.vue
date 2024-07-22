@@ -49,7 +49,8 @@
     </div>
     <!-- Copy debts to clipboard button -->
     <div class="flex w-8">
-      <button @click="copyDebts()"
+      <button v-if="loaded"
+          @click="copyDebts()"
               class="rounded-lg bg-gray-200 p-3 shadow-lg hover:bg-blue-500 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-gray-700 dark:text-white dark:hover:bg-blue-600"
       >
         <svg class="w-5 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
