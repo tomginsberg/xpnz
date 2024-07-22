@@ -16,8 +16,9 @@ const flagEmoji = {
   CAD: "🇨🇦",
   USD: "🇺🇸",
   EUR: "🇪🇺",
+  PLN: "🇵🇱",
 };
-const currencies = ["CAD", "USD", "EUR"];
+const currencies = ["CAD", "USD", "EUR", "PLN"];
 
 const router = useRouter();
 const route = useRoute();
@@ -178,7 +179,7 @@ function saveExpense() {
 
   XPNZService.editTransaction({
     id: transactionID,
-    ledger: ledgerID,
+    ledger: ledgerID.toLowerCase(),
     name: name.value,
     category: category.value,
     by: {
