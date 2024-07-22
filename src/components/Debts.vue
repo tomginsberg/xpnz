@@ -185,11 +185,23 @@ function settleDebt(memberFrom, memberTo, amount) {
   });
 }
 
-function copyDebts() {
-  const text = debts.value
+async function copyDebts() {
+  let text = debts.value
       .map((debt) => `${debt[0]} → ${debt[1]}: $${debt[2]}`)
       .join("\n");
   console.log(text);
-  navigator.clipboard.writeText(text);
+  // add workspcae url to the text
+  text = `📊 Debts\n\n${text}\n\nsee expenses @ https://xpnz.titanium.ddns.me/${ledgerID}`;
+  if (navigator.share){
+    await navigator.share({
+      text: text
+    });
+  }
+  else if(navigator.clipboard){
+    await navigator.clipboard.writeText(text);
+  }
+  else {
+    alert(text);
+  }
 }
 </script>
