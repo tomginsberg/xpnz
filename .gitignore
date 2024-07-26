@@ -25,6 +25,7 @@ dist-ssr
 
 # API Related Stuff
 venv
+.venv
 **/__pycache__
 members/
 ledgers/
