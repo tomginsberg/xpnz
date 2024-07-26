@@ -51,7 +51,7 @@
 
     <!-- Copy debts to clipboard button -->
     <div class="flex w-8">
-      <button v-if="loaded" @click="copyDebts"
+      <button v-if="debts.length !== 0 && loaded " @click="copyDebts"
               :class="buttonClass"
               class="rounded-lg p-3 shadow-lg dark:text-white">
         <svg v-if="!animationComplete" class="w-5 h-6" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
