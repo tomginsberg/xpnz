@@ -8,7 +8,7 @@ import Dropdown from 'primevue/dropdown';
 import Panel from "primevue/panel";
 import Lara from "./presets/lara";
 import VueApexCharts from "vue3-apexcharts";
-// import "primevue/resources/themes/aura-dark-indigo/theme.css";
+
 
 const app = createApp(App);
 
