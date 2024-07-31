@@ -11,7 +11,7 @@
         <button
           @click="newExpense"
           type="button"
-          class="pulsing-border group inline-flex h-16 w-16 items-center justify-center rounded-full bg-blue-600 font-medium hover:bg-blue-700 hover:bg-green-500 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
+          class="pulsing-border group inline-flex h-16 w-16 items-center justify-center rounded-full bg-blue-600 font-medium hover:bg-green-500 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:focus:ring-blue-800"
         >
           <svg
             class="h-6 w-6 text-white"
