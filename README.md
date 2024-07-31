@@ -5,7 +5,7 @@ ree & self-hosted group expense tracking app.
 
 Try it [here!](https://xpnz.titanium.ddns.me/)
 
-![xpnz](https://hackmd.io/_uploads/S1fT9H3uC.png)
+![xpnz](public/demo.png)
 
 
 ## Self Host - Installation & Deployment
