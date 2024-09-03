@@ -712,17 +712,6 @@ function copyExpense() {
             {{ member }}
           </label>
 
-          <VueInputCalculator
-              auto-apply
-              enableKeyboard
-              v-model="forWeights[index]"
-              number-buttons-bg-color="#0f172a"
-              action-buttons-bg-color="#1e293b"
-              bg-color="#020617"
-              text-color="white"
-              event-buttons-bg-color="#334155"
-              action-success-button-bg-color="#1d4ed8"
-          >
             <input
               v-model="forWeights[index]"
               class="block w-20 flex-1 rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-blue-500 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white dark:placeholder-gray-400 dark:focus:border-blue-500 dark:focus:ring-blue-500"
@@ -730,7 +719,6 @@ function copyExpense() {
               placeholder="0"
               required
           />
-          </VueInputCalculator>
         </div>
       </div>
     </div>
