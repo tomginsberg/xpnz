@@ -201,7 +201,7 @@ const copyDebts = async () => {
   console.log(text);
 
   // Add workspace URL to the text
-  text = `📊 Debts\n\n${text}\n\nsee expenses @ https://xpnz.titanium.ddns.me/${ledgerID}`;
+  text = `📊 Debts\n\n${text}\n\nsee expenses @ https://www.xpnz.ca/${ledgerID}`;
 
   if (navigator.share) {
     await navigator.share({text: text});
