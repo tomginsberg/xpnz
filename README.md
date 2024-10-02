@@ -3,7 +3,7 @@
 A sleek, modern,
 ree & self-hosted group expense tracking app.
 
-Try it [here!](https://xpnz.titanium.ddns.me/)
+Try it [here!](https://www.xpnz.ca/)
 
 ![xpnz](public/demo.png)
 
