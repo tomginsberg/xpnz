@@ -1,8 +1,7 @@
 // import axios
 import axios from "axios";
 
-const endpoint = "https://xpnzapi.titanium.ddns.me/";
-// const endpoint = "http://titanium:8000/";
+const endpoint = "https://api.xpnz.ca/";
 
 const expenseNames = [
   "Coffee Break ☕",
@@ -101,6 +100,8 @@ export const XPNZService = {
         .get(endpoint + `ledger/get/`, {
           params: {
             ledger: ledgerId,
+            // cache_bust
+             _t: new Date().getTime(),
           },
         })
         .then((response) => {
